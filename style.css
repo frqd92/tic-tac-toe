@@ -11,28 +11,37 @@ body{
 }
 .main-container{
     border: 1px solid black;
-    padding: 50px 50px 20px 50px;
+    padding: 30px 30px 20px 30px;
     border-radius: 10px;
     display: grid;
-    grid-template-rows: 2fr 15fr 1fr;
-    gap: 10px;
+    grid-template-rows: 2fr 10fr 1fr;
+
 }
+
 .info-container{
     display: flex;
     justify-content: space-evenly;
+    align-items: center;
+    border: 1px solid black;
 }
 .button-container{
+
     display: flex;
     justify-content: space-between;
+    border: 1px solid black;
+    align-items: center;
 }
 .board-container{
   display: grid;
   grid-template-columns: repeat(3, 150px);
   grid-template-rows: repeat(3, 150px);
+    margin: 3vh 0px;
 
 }
 .square{
     border: 0.1px solid rgba(168, 162, 162, 0.83);
+    cursor: pointer;
+    user-select: none;
    
 }
 .square-hover:hover{
@@ -51,6 +60,63 @@ body{
 .square:nth-child(3),.square:nth-child(6),.square:nth-child(9){
     border-right: none;
 }
+
+.player-container{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+}
+
+.toggle-container{
+    width: 60px;
+    height: 25px;
+    border: 1px solid black;
+    border-radius: 5px;
+    user-select: none;
+    cursor: pointer;
+}
+.toggle{
+    border-radius: 5px;
+    width: 50%;
+    height: 100%;
+    background-color:rgb(168, 168, 193);
+    transition: transform 0.2s linear;
+    transform: none;
+    text-align: center;
+}
+.toggle-O{
+    transform: translateX(100%);
+}
+
+.toggle-2{
+    transform: translateX(100%);
+}
+.toggle-2-X{
+    transform: none;
+}
+
+
+input{
+  text-align: center;
+}
+
+.drop-down{
+    width: 100%;
+    user-select: none;
+    border: 0.5px solid rgba(9, 7, 7, 0.353);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.arrows{
+    width: 18px;
+}
+
+
 
 @media only screen and (max-width: 650px){
     .board-container{

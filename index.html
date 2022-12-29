@@ -11,9 +11,34 @@
 
 <div class="main-container">
     <div class="info-container">
-        <div class="player-container">Player 1</div>
+        <div class="player-container">
+            <input type="text" value="Player 1">
+
+            <div class="drop-down">
+                <p class="drop-text">Human</p><img src="icons/swap-vertical.svg" class="arrows"> 
+
+            </div>
+
+            <div class="toggle-container toggle-player1">
+                <div class="toggle toggle-1">X
+                </div>
+            </div>
+        </div>
         <p class="vs-box">VS</p>
-        <div class="player-container">Player 2</div>
+        <div class="player-container">
+            <input type="text" value="Player 2">
+
+            <div class="drop-down">
+                <p class="drop-text">AI (random)</p><img src="icons/swap-vertical.svg" class="arrows"> 
+
+            </div>
+
+            <div class="toggle-container toggle-player2">
+                <div class="toggle toggle-2">O
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="board-container"></div>
@@ -22,6 +47,7 @@
     <div class="button-container">
         <button id="history-btn">Game History</button>
         <button id="reset-btn">Reset Board</button>
+        <div class="github">Github</div>
     </div>
 </div>
 
