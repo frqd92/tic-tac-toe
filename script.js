@@ -1,5 +1,27 @@
+
+const AI = function(board,player){
+    function random(){
+        return freeSpots()[Math.floor(Math.random() * freeSpots().length)]
+    }
+
+    function freeSpots(){
+        return board.filter(elem=> typeof elem ==="number");
+    }
+
+
+
+
+    return{
+        random
+    }
+    
+}
+
+
+
 const GameBoard = (function(){
     let indexBoard = [];
+    let turn=0;
     function createBoard(){ // start/resets board
         document.querySelector(".board-container").innerHTML="";
         for(let i=0;i<9;i++){
@@ -13,10 +35,27 @@ const GameBoard = (function(){
         }
 
     function turnRouter(e){
+        let squareId = e.target.id;
         let player1 = checkPlayerMark()[0];
         let player2 = checkPlayerMark()[1];
         let player1Type =checkPlayerType()[0];
         let player2Type =checkPlayerType()[1];
+        if(player1Type==="Human" && player1==="X"){
+            playTurn(squareId, player1)
+            let aiIndex = AI(indexBoard, player2);
+            if(player2Type==="AI (random)"){
+                let aiRandom = aiIndex.random();
+                playTurn(aiRandom, player2)
+            }
+
+           
+        }
+
+    }
+
+    function playTurn(id, player){
+        document.getElementById(id).textContent=player;
+        indexBoard[id]=player;
     }
 
     function checkPlayerMark(){
@@ -53,7 +92,7 @@ resetBtn.addEventListener("click", ()=>{game.createBoard()});
 //toggle player
 const toggleContainer = document.querySelectorAll(".toggle-container");
 toggleContainer.forEach(elem=>elem.addEventListener("click", toggleLogic));
-function toggleLogic(e){
+function toggleLogic(){
     game.createBoard();
     toggle1 = document.querySelector(".toggle-1")
     toggle2 = document.querySelector(".toggle-2");
