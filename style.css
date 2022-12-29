@@ -24,20 +24,32 @@ body{
     align-items: center;
     border: 1px solid black;
 }
-.button-container{
+/* ------------------------------------------------------------------------------ */
 
-    display: flex;
-    justify-content: space-between;
+.button-container{
+    justify-self: end;
+    width: 100%;
+    padding: 0px 5px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:10px;
+    justify-content: center;
     border: 1px solid black;
     align-items: center;
 }
-.board-container{
-  display: grid;
-  grid-template-columns: repeat(3, 150px);
-  grid-template-rows: repeat(3, 150px);
-    margin: 3vh 0px;
-
+.github{
+    justify-self: center;
 }
+.board-container{
+    display: grid;
+    grid-template-columns: repeat(3, 150px);
+    grid-template-rows: repeat(3, 150px);
+    margin: 3vh 0px;
+}
+
+
+/* ------------------------------------------------------------------------------ */
+
 .square{
     border: 0.1px solid rgba(168, 162, 162, 0.83);
     cursor: pointer;
@@ -60,6 +72,7 @@ body{
 .square:nth-child(3),.square:nth-child(6),.square:nth-child(9){
     border-right: none;
 }
+/* ------------------------------------------------------------------------------ */
 
 .player-container{
     display: flex;
@@ -85,7 +98,7 @@ body{
     transform: none;
     text-align: center;
 }
-.toggle-O{
+.toggle-1-O{
     transform: translateX(100%);
 }
 
@@ -100,8 +113,9 @@ body{
 input{
   text-align: center;
 }
-
+/* ------------------------------------------------------------------------------ */
 .drop-down{
+    position: relative;
     width: 100%;
     user-select: none;
     border: 0.5px solid rgba(9, 7, 7, 0.353);
@@ -112,8 +126,33 @@ input{
     cursor: pointer;
 }
 
+
 .arrows{
     width: 18px;
+    z-index: -1;
+}
+.drop-text-1,.drop-text-2{
+    z-index: -1;
+}
+.menu-1, .menu-2{
+    visibility: hidden;
+}
+.menu{
+    position: absolute;
+    list-style: none;
+    background: white;
+    width: 105%;
+    height: 84px;
+    text-align: center;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 100;
+}
+.menu li{
+    padding: 5px;
+}
+.menu li:hover{
+    background-color: aliceblue;
 }
 
 
