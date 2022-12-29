@@ -1,0 +1,60 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.main-container{
+    border: 1px solid black;
+    padding: 50px 50px 20px 50px;
+    border-radius: 10px;
+    display: grid;
+    grid-template-rows: 2fr 15fr 1fr;
+    gap: 10px;
+}
+.info-container{
+    display: flex;
+    justify-content: space-evenly;
+}
+.button-container{
+    display: flex;
+    justify-content: space-between;
+}
+.board-container{
+  display: grid;
+  grid-template-columns: repeat(3, 150px);
+  grid-template-rows: repeat(3, 150px);
+
+}
+.square{
+    border: 0.1px solid rgba(168, 162, 162, 0.83);
+   
+}
+.square-hover:hover{
+
+}
+
+.square:first-child,.square:nth-child(2),.square:nth-child(3){
+    border-top: none;
+}
+.square:first-child,.square:nth-child(4),.square:nth-child(7){
+    border-left: none;
+}
+.square:nth-child(7),.square:nth-child(8),.square:nth-child(9){
+    border-bottom: none;
+}
+.square:nth-child(3),.square:nth-child(6),.square:nth-child(9){
+    border-right: none;
+}
+
+@media only screen and (max-width: 650px){
+    .board-container{
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 100px);
+      }
+}
