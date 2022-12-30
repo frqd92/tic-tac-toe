@@ -61,7 +61,15 @@ const GameBoard = (function(){
         else{
             if( (checkPlayerMark().indexOf("X")===0 && checkPlayerType()[0].includes("AI")) || 
                 (checkPlayerMark().indexOf("X")===1 && checkPlayerType()[1].includes("AI"))){
-                playTurn(ai.random(), "X");
+                if(turn%2!==0){
+                    playTurn(ai.random(), "X");
+                }
+              
+            }
+            else{
+                if(turn%2===0){
+                    playTurn(ai.random(), "O");
+                }
             }
         }
         }
