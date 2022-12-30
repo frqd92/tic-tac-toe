@@ -1,4 +1,33 @@
-const AI = function(board){
+const AI = function(board, aiMark){
+
+    function idealSquare(){
+        return miniMax(board, aiMark);
+    }
+
+    function miniMax(board, aiMark){
+        const checker = GameBoard();
+        let emptySquares = freeSpots()
+        let opponent;
+        aiMark==="X"?opponent==="O":opponent==="X";
+
+        //check for terminal state
+        if(checker.checkPattern(board, aiMark)){
+            console.log("hello")
+            return {points:100}
+        }
+        else if(checker.checkPattern(board, opponent)){
+            return {points:-100}
+        }
+        else if(freeSpots().length===0){
+            return {points: 0};
+        }
+
+
+      
+
+        return 0
+    }
+
     function random(){
         return freeSpots()[Math.floor(Math.random() * freeSpots().length)]
     }
@@ -7,7 +36,7 @@ const AI = function(board){
     }
 
     return{
-        random
+        random, idealSquare
     }
     
 }
@@ -17,7 +46,7 @@ let testarr = [];
 let turn=1;
 let indexBoard = [];
 const GameBoard = (function(){
-
+    console.log("test")
     function createBoard(){ // start/resets board
         document.querySelector(".board-container").innerHTML="";
         turn=1;
@@ -40,8 +69,15 @@ const GameBoard = (function(){
     function moveRouter(id){
         const player1 = playerObjects()[0];
         const player2 = playerObjects()[1];
-        const ai = AI(indexBoard);
-        if(id!==null){
+
+        //if human vs Ai: find out which player is AI in order to feed it as a parameter to minimax
+        let ai;
+        if((player1.type==="Human" || player2.type==="Human") && (player1.type!=="Human" || player2.type!=="Human")){
+            player1.type!=="Human"? ai = AI(indexBoard, player1.marker) : ai = AI(indexBoard, player2.marker);
+        }
+
+
+        if(id!==null){ //if click comes from square
             //Human vs Human
             if(player1.type==="Human" && player2.type==="Human"){       
                 turn%2!==0?playTurn(id, "X"):playTurn(id, "O");
@@ -51,35 +87,67 @@ const GameBoard = (function(){
                 if( (checkPlayerMark().indexOf("X")===0 && checkPlayerType()[1].includes("AI")) || 
                     (checkPlayerMark().indexOf("X")===1 && checkPlayerType()[0].includes("AI"))){
                     playTurn(id, "X");
-                    playTurn(ai.random(), "O");
+                    if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
+                        playTurn(ai.random(), "O");
+                    }
+                    else{
+                        playTurn(ai.idealSquare(), "O");
+                    }
                 }
                 else{
                     playTurn(id, "O");
-                    playTurn(ai.random(), "X");
+                    if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
+                        playTurn(ai.random(), "X");
+                    }
+                    else{
+                        playTurn(ai.idealSquare(), "X");
+                    }
                 }
             }
         }
-        else{
+        else{ //if click comes from player type selection
             if( (checkPlayerMark().indexOf("X")===0 && checkPlayerType()[0].includes("AI")) || 
                 (checkPlayerMark().indexOf("X")===1 && checkPlayerType()[1].includes("AI"))){
                 if(turn%2!==0){
-                    playTurn(ai.random(), "X");
+                    if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
+                        playTurn(ai.random(), "X");
+                    }
+                    else{
+                        playTurn(ai.idealSquare(), "X");
+                    }
+                  
                 }
             }
             else{
-                if(turn%2===0){
-                    playTurn(ai.random(), "O");
+                if(turn>1){
+                    if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
+                        playTurn(ai.random(), "O");
+                    }
+                    else{
+                        playTurn(ai.idealSquare(), "O");
+                    }
                 }
+
             }
         }
         }
 
     function playTurn(id, player){
-        document.getElementById(id).textContent=player;
-        indexBoard[id]=player;
-        console.log(checkPattern(indexBoard, player));
-        turn++;
+            document.getElementById(id).textContent=player;
+            indexBoard[id]=player;
+            if(checkPattern(indexBoard, player)){
+                console.log("gameover")
+                console.log(checkPattern(indexBoard, player))
 
+            }
+
+            turn++;
+        
+        if(turn>9){
+            console.log("gameover")
+        }
+
+  
 
 
         const testing = document.querySelector(".testdiv")
@@ -92,13 +160,10 @@ const GameBoard = (function(){
         const winArray = [ [0,4,8], [2,4,6], [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8] ];
         let patternArr=[],winner ={};
         board.map((elem, index)=>{if(elem===mark) patternArr.push(index)});
-
         for(let i=0;i<winArray.length;i++){
             let count=0;
             for(let x=0;x<patternArr.length;x++){
-                if(patternArr.includes(winArray[i][x])){
-                    count++;
-                }
+                if(patternArr.includes(winArray[i][x]))count++;
                 if(count===3){
                     winner.mark = mark;
                     winner.indexOfWin = winArray[i];
@@ -108,8 +173,6 @@ const GameBoard = (function(){
      
         }
         return null;
-
-   
     }
 
     function checkPlayerMark(){
@@ -156,7 +219,7 @@ const GameBoard = (function(){
     console.log("turn: " + turn)
 
     })
-    return {createBoard, menuRouter}
+    return {createBoard, menuRouter, checkPattern}
 })
 
 
