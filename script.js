@@ -1,15 +1,11 @@
 
-const AI = function(board,player){
+const AI = function(board){
     function random(){
         return freeSpots()[Math.floor(Math.random() * freeSpots().length)]
     }
-
     function freeSpots(){
         return board.filter(elem=> typeof elem ==="number");
     }
-
-
-
 
     return{
         random
@@ -18,19 +14,19 @@ const AI = function(board,player){
 }
 
 
-
+let turn=1;
+let indexBoard = [];
 const GameBoard = (function(){
-    let indexBoard = [];
-    let turn=0;
     function createBoard(){ // start/resets board
         document.querySelector(".board-container").innerHTML="";
+        turn=1;
         for(let i=0;i<9;i++){
             indexBoard[i]=i;
             const square = document.createElement("div");
             square.id=i;
             square.classList.add("square");
             document.querySelector(".board-container").appendChild(square);
-            square.addEventListener("click", turnRouter);
+            square.addEventListener("click", turnRouter, {once:true});
             }
         }
 
@@ -40,22 +36,50 @@ const GameBoard = (function(){
         let player2 = checkPlayerMark()[1];
         let player1Type =checkPlayerType()[0];
         let player2Type =checkPlayerType()[1];
-        if(player1Type==="Human" && player1==="X"){
-            playTurn(squareId, player1)
-            let aiIndex = AI(indexBoard, player2);
-            if(player2Type==="AI (random)"){
-                let aiRandom = aiIndex.random();
-                playTurn(aiRandom, player2)
-            }
+        let aiPlayer = AI(indexBoard);
 
-           
+        if(turn>9){
+            console.log("gameover")
+        }
+     
+        if(player1Type==="Human" && player2Type==="Human"){                            //Human vs Human
+            turn%2===0?playTurn(squareId,player2):playTurn(squareId,player1);
         }
 
+
+        if(player1Type.includes("AI") || player2Type.includes("AI")){
+            if(player1Type==="Human" || player2Type==="Human"){                    //human vs AI
+                if(player1Type==="Human"){
+                    playTurn(squareId,player1)
+                    playTurn(aiPlayer.random(), player2)
+                }
+                else{
+                    playTurn(squareId,player2)
+                    playTurn(aiPlayer.random(), player1)
+                }
+
+            }
+        }
+        
     }
+    //where you left off
+    function selectRouter(type, select){ //in case player type is changed to ai midgame
+        let ai = AI(indexBoard);
+        console.log(select)
+        console.log(document.querySelector(`.${select}`).innerText)
+      
+        if(turn%2==0 && document.querySelector(`.${select}`).innerText.includes("AI")){
+            playTurn(ai.random(), "O")
+       }
+       
+    };
+
+
 
     function playTurn(id, player){
         document.getElementById(id).textContent=player;
         indexBoard[id]=player;
+        turn++;
     }
 
     function checkPlayerMark(){
@@ -73,11 +97,16 @@ const GameBoard = (function(){
         const rightPlayer = document.querySelector(".drop-text-2").textContent;
         return [leftPlayer, rightPlayer]
     }
-    document.getElementById("history-btn").addEventListener("click", ()=>{
-    console.log(checkPlayerMark()[0], checkPlayerType()[0])
-    console.log(checkPlayerMark()[1], checkPlayerType()[1])
+
+    document.getElementById("history-btn").addEventListener("click", (e)=>{
+    // console.log(checkPlayerMark()[0], checkPlayerType()[0])
+    // console.log(checkPlayerMark()[1], checkPlayerType()[1])
+
+    console.log(indexBoard)
+    console.log("turn: " + turn)
+
     })
-    return {createBoard}
+    return {createBoard, turnRouter, selectRouter}
 })
 
 
@@ -106,6 +135,7 @@ function toggleLogic(){
         toggle1.textContent="X";
         toggle2.textContent="O"
     }
+
 }
 //------------------------------------------------------------------------------------------//
 
@@ -113,7 +143,8 @@ const selectMenu=function(className, index){
     const select = document.querySelector(`.${className}`);
     const menu = document.querySelector(`.menu-${index}`);
     const li = menu.querySelectorAll("li");
-    const text = document.querySelector(`.drop-text-${index}`)
+    const text = document.querySelector(`.drop-text-${index}`);
+    const aiChange = GameBoard();
     select.addEventListener("click", showMenu, {once:true});
     function showMenu(){
         menu.style.visibility="visible";
@@ -127,6 +158,7 @@ const selectMenu=function(className, index){
         text.textContent = e.target.textContent
         menu.style.visibility="hidden";
         select.addEventListener("click", showMenu, {once:true});
+        aiChange.selectRouter(e.target.textContent, `drop-${index}`);
     }
 }   
 const selectLeft = selectMenu("drop-1", 1);
