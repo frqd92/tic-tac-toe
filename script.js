@@ -13,6 +13,7 @@ const AI = function(board){
 }
 
 
+let testarr = [];
 let turn=1;
 let indexBoard = [];
 const GameBoard = (function(){
@@ -31,12 +32,12 @@ const GameBoard = (function(){
         }
   
     function turnClickRouter(e){
-        clickRouter(e.target.id) 
+        moveRouter(e.target.id) 
     }
     function menuRouter(){
-        clickRouter(null)
+        moveRouter(null)
     }
-    function clickRouter(id){
+    function moveRouter(id){
         const player1 = playerObjects()[0];
         const player2 = playerObjects()[1];
         const ai = AI(indexBoard);
@@ -64,7 +65,6 @@ const GameBoard = (function(){
                 if(turn%2!==0){
                     playTurn(ai.random(), "X");
                 }
-              
             }
             else{
                 if(turn%2===0){
@@ -74,21 +74,42 @@ const GameBoard = (function(){
         }
         }
 
-
-
-
-
-
-    let testarr = [];
     function playTurn(id, player){
         document.getElementById(id).textContent=player;
         indexBoard[id]=player;
+        console.log(checkPattern(indexBoard, player));
         turn++;
+
+
+
         const testing = document.querySelector(".testdiv")
- 
         testarr.push(player)
         testing.innerHTML = `
-        arr: ${indexBoard} <br> turn: ${turn} <br> plays: ${testarr} <br>`
+        arr: ${indexBoard} <br> turn: ${turn} <br> plays: ${testarr} <br> `
+    }
+
+    function checkPattern(board, mark){
+        const winArray = [ [0,4,8], [2,4,6], [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8] ];
+        let patternArr=[],winner ={};
+        board.map((elem, index)=>{if(elem===mark) patternArr.push(index)});
+
+        for(let i=0;i<winArray.length;i++){
+            let count=0;
+            for(let x=0;x<patternArr.length;x++){
+                if(patternArr.includes(winArray[i][x])){
+                    count++;
+                }
+                if(count===3){
+                    winner.mark = mark;
+                    winner.indexOfWin = winArray[i];
+                    return winner;
+                }
+            }
+     
+        }
+        return null;
+
+   
     }
 
     function checkPlayerMark(){
