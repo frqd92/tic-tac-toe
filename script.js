@@ -1,31 +1,72 @@
 const AI = function(board, aiMark){
 
     function idealSquare(){
+
         return miniMax(board, aiMark);
+  
     }
 
-    function miniMax(board, aiMark){
-        const checker = GameBoard();
-        let emptySquares = freeSpots()
-        let opponent;
-        aiMark==="X"?opponent==="O":opponent==="X";
+    function miniMax(board, player){
+        const checker = GameBoard(); //how to assign this without running it?
+        let emptySquares = freeSpots();
+        let opponent = player==="X"?"O":"X";
 
+        
         //check for terminal state
         if(checker.checkPattern(board, aiMark)){
-            console.log("hello")
-            return {points:100}
+            return 100;
         }
         else if(checker.checkPattern(board, opponent)){
-            return {points:-100}
+            return -100;
         }
         else if(freeSpots().length===0){
-            return {points: 0};
+            return 0;
         }
 
+        let moveHistory = [];
+        for(let i=0;i<emptySquares.length;i++){
+            let possMove = {};
+            possMove.index = board[emptySquares[i]];
+            board[emptySquares[i]]=player;
+            if(player===aiMark){
+                let outcome = miniMax(board, opponent);
+                possMove.points = outcome;
+            }
+            else{
+                let outcome = miniMax(board, aiMark);
+                possMove.points = outcome;
+            }
 
-      
 
-        return 0
+            board[emptySquares[i]] = possMove.index;
+            moveHistory.push(possMove)
+          
+        }
+    
+        let idealMove;
+        if(player===aiMark){
+            let highestPoint = -Infinity;
+            for(let i=0;i<moveHistory.length;i++){
+                if(moveHistory[i].points > highestPoint){
+                    highestPoint = moveHistory[i].points;
+                    idealMove=i;
+                }
+            }
+        }
+        else{
+            let highestPoint = Infinity;
+            for(let i=0;i<moveHistory.length;i++){
+                if(moveHistory[i].points < highestPoint){
+                    highestPoint = moveHistory[i].points;
+                    idealMove=i;
+                }
+            }
+        }
+        //console.log(moveHistory[idealMove])
+        return moveHistory[idealMove].index
+    
+        
+        
     }
 
     function random(){
@@ -45,8 +86,7 @@ const AI = function(board, aiMark){
 let testarr = [];
 let turn=1;
 let indexBoard = [];
-const GameBoard = (function(){
-    console.log("test")
+const GameBoard = function(){
     function createBoard(){ // start/resets board
         document.querySelector(".board-container").innerHTML="";
         turn=1;
@@ -90,7 +130,8 @@ const GameBoard = (function(){
                     if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
                         playTurn(ai.random(), "O");
                     }
-                    else{
+                    else if(!checkPlayerType()[0].includes("random") || !checkPlayerType()[1].includes("random")){
+                        console.log("blaah")
                         playTurn(ai.idealSquare(), "O");
                     }
                 }
@@ -124,6 +165,7 @@ const GameBoard = (function(){
                         playTurn(ai.random(), "O");
                     }
                     else{
+                        console.log("shiiet")
                         playTurn(ai.idealSquare(), "O");
                     }
                 }
@@ -133,18 +175,19 @@ const GameBoard = (function(){
         }
 
     function playTurn(id, player){
-            document.getElementById(id).textContent=player;
-            indexBoard[id]=player;
-            if(checkPattern(indexBoard, player)){
-                console.log("gameover")
-                console.log(checkPattern(indexBoard, player))
+        indexBoard[id]=player;
+        document.getElementById(id).textContent=player;
 
-            }
+        if(checkPattern(indexBoard, player)){
+            //console.log("gameover")
+            //console.log(checkPattern(indexBoard, player))
 
-            turn++;
+        }
+
+        turn++;
         
         if(turn>9){
-            console.log("gameover")
+            //console.log("gameover")
         }
 
   
@@ -211,16 +254,16 @@ const GameBoard = (function(){
 
 
 
-    document.getElementById("history-btn").addEventListener("click", (e)=>{
-    // console.log(checkPlayerMark()[0], checkPlayerType()[0])
-    // console.log(checkPlayerMark()[1], checkPlayerType()[1])
+    // document.getElementById("history-btn").addEventListener("click", (e)=>{
+    // // console.log(checkPlayerMark()[0], checkPlayerType()[0])
+    // // console.log(checkPlayerMark()[1], checkPlayerType()[1])
 
-    console.log(indexBoard)
-    console.log("turn: " + turn)
+    // console.log(indexBoard)
+    // console.log("turn: " + turn)
+    // })
 
-    })
     return {createBoard, menuRouter, checkPattern}
-})
+}
 
 
 
