@@ -118,7 +118,6 @@ const GameBoard = function(){
                 }
             }
             }
-
         }
         }
     function playTurn(id, player){
@@ -131,10 +130,9 @@ const GameBoard = function(){
             document.getElementById(id).textContent=player;  
             turn++;   
             historyArr.push({mark: player, id: parseInt(id)})
-            console.log(historyArr)
+            //console.log(historyArr)
         }
         if(checkPattern(indexBoard, player)){   //win
-            console.log("gameover")
             let winner = checkPattern(indexBoard, player);
             whoWon(winner);
         }
@@ -249,14 +247,9 @@ const AI = function(board, aiMark){
         return moveHistory[idealMove]
     }
 
-    function random(){
-        console.log("random")
-        return freeSpots()[Math.floor(Math.random() * freeSpots().length)]
-    }
+    function random(){return freeSpots()[Math.floor(Math.random() * freeSpots().length)]}
 
-    function freeSpots(){
-        return board.filter(elem=> typeof elem ==="number");
-    }
+    function freeSpots(){return board.filter(elem=> typeof elem ==="number");}
 
     return{random, idealSquare}
 }
@@ -272,6 +265,7 @@ resetBtn.addEventListener("click", ()=>{game.createBoard()});
 //toggle player
 const toggleContainer = document.querySelectorAll(".toggle-container");
 toggleContainer.forEach(elem=>elem.addEventListener("click", toggleLogic));
+
 function toggleLogic(){
     game.createBoard();
     toggle1 = document.querySelector(".toggle-1")
@@ -286,7 +280,6 @@ function toggleLogic(){
         toggle1.textContent="X";
         toggle2.textContent="O"
     }
-
 }
 //------------------------------------------------------------------------------------------//
 
@@ -295,12 +288,12 @@ const selectMenu=function(className, index){
     const menu = document.querySelector(`.menu-${index}`);
     const li = menu.querySelectorAll("li");
     const text = document.querySelector(`.drop-text-${index}`);
-    select.addEventListener("click", showMenu, {once:true});
+    select.addEventListener("click", showMenu);
     function showMenu(){
         menu.style.visibility="visible";
         li.forEach(elem=>{
             elem.textContent===text.textContent?elem.style.background="rgba(0, 21, 255, 0.356)": elem.style.background="";
-            elem.addEventListener("click", liFunc, {once:true})
+                elem.addEventListener("click", liFunc, {once:true})
         })
     }
     function liFunc(e){
@@ -314,6 +307,15 @@ const selectMenu=function(className, index){
         }
 
     }
+    
+
+    window.addEventListener("click", e=>{
+        console.log(!e.target.className.includes("drop-down"))
+        if(!e.target.className.includes("drop-down")){
+            menu.style.visibility="hidden";
+        }
+    })
+
 }   
 const selectLeft = selectMenu("drop-1", 1);
 const selectRight = selectMenu("drop-2", 2);
