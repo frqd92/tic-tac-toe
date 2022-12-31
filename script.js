@@ -1,8 +1,7 @@
 //bugs: when playing human vs human and changing O player turn to AI when it's human's turn it plays O again.
 //ai still wonky
-//can click on ai played square wtf
-const AI = function(board, aiMark){
 
+const AI = function(board, aiMark){
     function idealSquare(){
         return miniMax(board, aiMark).index;
     }
@@ -13,15 +12,9 @@ const AI = function(board, aiMark){
         let opponent = player==="X"?"O":"X";
 
         //check for terminal state
-        if(checker.checkPattern(board, aiMark)){
-            return {points: 100};
-        }
-        else if(checker.checkPattern(board, opponent)){
-            return {points: -100};
-        }
-        else if(freeSpots().length===0){
-            return {points: 0};
-        }
+        if(checker.checkPattern(board, aiMark)){return {points: 100};}
+        else if(checker.checkPattern(board, opponent)){return {points: -100};}
+        else if(freeSpots().length===0){return {points: 0};}
 
         let moveHistory = [];
         for(let i=0;i<emptySquares.length;i++){
@@ -36,12 +29,9 @@ const AI = function(board, aiMark){
                 let outcome = miniMax(board, aiMark);
                 possMove.points = outcome.points;
             }
-
-
             board[emptySquares[i]] = possMove.index;
             moveHistory.push(possMove)
         }
-
         let idealMove;
         if(player===aiMark){
             let highestPoint = -Infinity;
@@ -67,14 +57,12 @@ const AI = function(board, aiMark){
     function random(){
         return freeSpots()[Math.floor(Math.random() * freeSpots().length)]
     }
+
     function freeSpots(){
         return board.filter(elem=> typeof elem ==="number");
     }
 
-    return{
-        random, idealSquare
-    }
-    
+    return{random, idealSquare}
 }
 
 
@@ -107,18 +95,15 @@ const GameBoard = function(){
     function moveRouter(id){
         const player1 = playerObjects()[0];
         const player2 = playerObjects()[1];
-
         //if human vs Ai: find out which player is AI in order to feed it as a parameter to minimax
         //ai2 for ai vs ai
-        let ai, ai2;
+        let ai;
         if((player1.type==="Human" || player2.type==="Human") && (player1.type!=="Human" || player2.type!=="Human")){
             if(player1.type!=="Human"){
                 ai = AI(indexBoard, player1.marker)
-                ai2= AI(indexBoard, player2.marker);
             }  
             else{
                 ai = AI(indexBoard, player2.marker);
-                ai2 = AI(indexBoard, player1.marker)
             } 
         }
         if(id!==null){ //if click comes from square
@@ -149,14 +134,28 @@ const GameBoard = function(){
                 }
             }
         }
+        //playTurn(ai2.random(), "X")
+        //playTurn(ai3.random(), "O")
         else{ //if click comes from player type selection
-            if(checkPlayerType()[0].includes("AI") && checkPlayerType()[1].includes("AI")){
-                const ai3 = AI(indexBoard, "X");
-                const ai4 = AI(indexBoard, "O");
-                for(let i=0;i<(14-turn);i++){
-                    playTurn(ai3.idealSquare(), "X");
-                    playTurn(ai4.idealSquare(), "O");
+            if(checkPlayerType()[0].includes("AI") && checkPlayerType()[1].includes("AI")){ //AI VS AI
+                const ai2 = AI(indexBoard, "X");
+                const ai3 = AI(indexBoard, "O");
+
+                while(!checkPattern(indexBoard, "X") &&!checkPattern(indexBoard, "O")){
+                    playTurn(ai2.random(), "X", true)
+                    playTurn(ai3.random(), "O", true)
                 }
+
+                
+
+
+                
+
+                
+                
+
+
+
             }
             else if(player1.type === "Human" || player2.type==="Human"){
                 if( (checkPlayerMark().indexOf("X")===0 && player1.type.includes("AI")) || 
@@ -171,7 +170,7 @@ const GameBoard = function(){
                     }
             }
             else{
-                if(turn>1){
+                if(turn>1 && turn%2===0){
                     if(player1.type.includes("random") || player2.type.includes("random")){
                         playTurn(ai.random(), "O");
                     }
@@ -185,34 +184,33 @@ const GameBoard = function(){
         }
         }
 
-    function playTurn(id, player){
+    function playTurn(id, player, aiVSai){
         indexBoard[id]=player;
-        document.getElementById(id).textContent=player;
+        if(aiVSai){
+            document.getElementById(id).textContent=player;        
+        }
+
 
         if(checkPattern(indexBoard, player)){
-            //console.log("gameover")
-            //console.log(checkPattern(indexBoard, player))
+            console.log("gameover")
+            console.log(checkPattern(indexBoard, player))
 
         }
 
         turn++;
-        
+    
         if(turn>9){
             //console.log("gameover")
         }
-
-  
-
-
-        // const testing = document.querySelector(".testdiv")
-        // testarr.push(player)
-        // testing.innerHTML = `
-        // arr: ${indexBoard} <br> turn: ${turn} <br> plays: ${testarr} <br> `
+        const testing = document.querySelector(".testdiv")
+        testarr.push(player)
+        testing.innerHTML = `
+        arr: ${indexBoard} <br> turn: ${turn} <br> plays: ${testarr} <br> `
     }
 
     function checkPattern(board, mark){
         const winArray = [ [0,4,8], [2,4,6], [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8] ];
-        let patternArr=[],winner ={};
+        let patternArr=[], winner ={};
         board.map((elem, index)=>{if(elem===mark) patternArr.push(index)});
         for(let i=0;i<winArray.length;i++){
             let count=0;
@@ -224,36 +222,24 @@ const GameBoard = function(){
                     return winner;
                 }
             }
-     
         }
-        return null;
+        return null; //no winner, to skip checking terminal state in minimax
     }
 
     function checkPlayerMark(){
-        const toggle = document.querySelector(".toggle");
-        if(!toggle.classList.contains("toggle-1-O")){
-            return ["X","O"];
-        }
-        else{
-            return ["O","X"];
-        }
+        return !document.querySelector(".toggle").classList.contains("toggle-1-O")?["X","O"]:["O","X"];
     }
     function checkPlayerType(){
-        let left, right;
-        const leftPlayer = document.querySelector(".drop-text-1").textContent;
-        const rightPlayer = document.querySelector(".drop-text-2").textContent;
-        return [leftPlayer, rightPlayer]
+        return [document.querySelector(".drop-text-1").textContent, document.querySelector(".drop-text-2").textContent]
     }
     function playerObjects(){
-        const input1 = document.getElementById("input-1").value
-        const input2 = document.getElementById("input-2").value
         let player1 = {
-            name: input1,
+            name: document.getElementById("input-1").value,
             type: checkPlayerType()[0],
             marker:checkPlayerMark()[0]
         }
         let player2 = {
-            name: input2,
+            name: document.getElementById("input-2").value,
             type: checkPlayerType()[1],
             marker: checkPlayerMark()[1]
     
