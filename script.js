@@ -134,34 +134,35 @@ const GameBoard = function(){
                 }
             }
         }
-        //playTurn(ai2.random(), "X")
-        //playTurn(ai3.random(), "O")
+
         else{ //if click comes from player type selection
             if(checkPlayerType()[0].includes("AI") && checkPlayerType()[1].includes("AI")){ //AI VS AI
                 const ai2 = AI(indexBoard, "X");
                 const ai3 = AI(indexBoard, "O");
-
+                if(player1.type.includes("random")){
+                    typePlayer1 = ai2.random; 
+                }
+                else{
+                    typePlayer1 = ai2.idealSquare;
+                }
+                if(player2.type.includes("random")){
+                    typePlayer2 = ai3.random; 
+                }
+                else{
+                    typePlayer2 = ai2.idealSquare; 
+                }
                 for(let i=0;i<=4;i++){
-                        (function() {
-                            let xTime = setTimeout(function() { 
-                                playTurn(ai2.random(), "X", true)
-                                if(checkPattern(indexBoard, "X")){console.log("helloX"); clearTimeout(xTime); return}
-                             }, i * 500);
-                        })(i);
-                        (function() {
-                            let yTime = setTimeout(function() { 
-                                playTurn(ai3.random(), "O", true)
-                                if(checkPattern(indexBoard, "O")){console.log("helloY"); clearTimeout(yTime); return}
-                             }, i * 800);
-                        })(i);
+                    if(turn%2!==0){
+                        time(i, "X", typePlayer1)
+                        time(i, "O", typePlayer2)
+                    }
+                    else{
+                        time(i, "O", typePlayer2)
+                        time(i, "X", typePlayer1)
+                    }         
                 }
-
-
-                function timeOutX(){
-                        playTurn(ai2.random(), "X", true)
-                }
-                function timeOutY(){
-                        playTurn(ai3.random(), "O", true)
+                function time(i, mark, aiType){
+                    setTimeout(()=>{playTurn(aiType(), mark, true)}, 500 * i)
                 }
             }
             else if(player1.type === "Human" || player2.type==="Human"){
@@ -192,29 +193,41 @@ const GameBoard = function(){
         }
 
     function playTurn(id, player, aiVSai){
-        indexBoard[id]=player;
-        if(aiVSai){
-            document.getElementById(id).textContent=player;        
+        if(!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){
+            indexBoard[id]=player;
+            document.getElementById(id).textContent=player;  
+            turn++;   
+            testarr.push({mark: player, id: id})
+            console.log(testarr)
         }
-
-
+   
         if(checkPattern(indexBoard, player)){
             console.log("gameover")
-            console.log(checkPattern(indexBoard, player))
+            let winner = checkPattern(indexBoard, player);
+            whoWon(winner);
 
         }
 
-        turn++;
     
         if(turn>9){
             //console.log("gameover")
         }
+        //delete
         const testing = document.querySelector(".testdiv")
-        testarr.push(player)
+        testing.style.display = "block"
         testing.innerHTML = `
-        arr: ${indexBoard} <br> turn: ${turn} <br> plays: ${testarr} <br> `
+        arr: ${indexBoard} <br> turn: ${turn} <br> `
+
+        //delete
     }
 
+    function whoWon(winner){
+        const squares = document.querySelectorAll(".square");
+        let winArray = winner.indexOfWin;
+        winArray.forEach((e,i)=>{squares[winArray[i]].style.background = 'rgba(60, 69, 127, 0.344)';})
+
+        
+    }
     function checkPattern(board, mark){
         const winArray = [ [0,4,8], [2,4,6], [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8] ];
         let patternArr=[], winner ={};
