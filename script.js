@@ -1,16 +1,16 @@
+//bugs: when playing human vs human and changing O player turn to AI when it's human's turn it plays O again.
+//ai still wonky
+//can click on ai played square wtf
 const AI = function(board, aiMark){
 
     function idealSquare(){
-
         return miniMax(board, aiMark).index;
-  
     }
 
     function miniMax(board, player){
         const checker = GameBoard(); //how to assign this without running it?
         let emptySquares = freeSpots();
         let opponent = player==="X"?"O":"X";
-
 
         //check for terminal state
         if(checker.checkPattern(board, aiMark)){
@@ -62,9 +62,6 @@ const AI = function(board, aiMark){
             }
         }
         return moveHistory[idealMove]
-    
-        
-        
     }
 
     function random(){
@@ -99,7 +96,10 @@ const GameBoard = function(){
         }
   
     function turnClickRouter(e){
-        moveRouter(e.target.id) 
+        if(!e.target.textContent){
+            moveRouter(e.target.id) 
+        }
+
     }
     function menuRouter(){
         moveRouter(null)
@@ -109,11 +109,18 @@ const GameBoard = function(){
         const player2 = playerObjects()[1];
 
         //if human vs Ai: find out which player is AI in order to feed it as a parameter to minimax
-        let ai;
+        //ai2 for ai vs ai
+        let ai, ai2;
         if((player1.type==="Human" || player2.type==="Human") && (player1.type!=="Human" || player2.type!=="Human")){
-            player1.type!=="Human"? ai = AI(indexBoard, player1.marker) : ai = AI(indexBoard, player2.marker);
+            if(player1.type!=="Human"){
+                ai = AI(indexBoard, player1.marker)
+                ai2= AI(indexBoard, player2.marker);
+            }  
+            else{
+                ai = AI(indexBoard, player2.marker);
+                ai2 = AI(indexBoard, player1.marker)
+            } 
         }
-
         if(id!==null){ //if click comes from square
             //Human vs Human
             if(player1.type==="Human" && player2.type==="Human"){       
@@ -121,19 +128,19 @@ const GameBoard = function(){
             }
             //Human vs AI (if Human is X), only way to change X to ai is from the menu buttons, so menuRouter had to be created.
             if((player1.type==="Human" || player2.type==="Human") && (player1.type!=="Human" || player2.type!=="Human")){
-                if( (checkPlayerMark().indexOf("X")===0 && checkPlayerType()[1].includes("AI")) || 
-                    (checkPlayerMark().indexOf("X")===1 && checkPlayerType()[0].includes("AI"))){
+                if( (checkPlayerMark().indexOf("X")===0 && player2.type.includes("AI")) || 
+                    (checkPlayerMark().indexOf("X")===1 && player1.type.includes("AI"))){
                     playTurn(id, "X");
-                    if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
+                    if(player1.type.includes("random") || player2.type.includes("random")){
                         playTurn(ai.random(), "O");
                     }
-                    else if(!checkPlayerType()[0].includes("random") || !checkPlayerType()[1].includes("random")){
+                    else if(!player1.type.includes("random") || !player2.type.includes("random")){
                         playTurn(ai.idealSquare(), "O");
                     }
                 }
                 else{
                     playTurn(id, "O");
-                    if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
+                    if(player1.type.includes("random") || player2.type[1].includes("random")){
                         playTurn(ai.random(), "X");
                     }
                     else{
@@ -143,29 +150,38 @@ const GameBoard = function(){
             }
         }
         else{ //if click comes from player type selection
-            if( (checkPlayerMark().indexOf("X")===0 && checkPlayerType()[0].includes("AI")) || 
-                (checkPlayerMark().indexOf("X")===1 && checkPlayerType()[1].includes("AI"))){
-                if(turn%2!==0){
-                    if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
-                        playTurn(ai.random(), "X");
-                    }
-                    else{
-                        turn===1?playTurn(ai.random(),"X"):playTurn(ai.idealSquare(),"X");
-                    }
-                  
+            if(checkPlayerType()[0].includes("AI") && checkPlayerType()[1].includes("AI")){
+                const ai3 = AI(indexBoard, "X");
+                const ai4 = AI(indexBoard, "O");
+                for(let i=0;i<(14-turn);i++){
+                    playTurn(ai3.idealSquare(), "X");
+                    playTurn(ai4.idealSquare(), "O");
                 }
+            }
+            else if(player1.type === "Human" || player2.type==="Human"){
+                if( (checkPlayerMark().indexOf("X")===0 && player1.type.includes("AI")) || 
+                (checkPlayerMark().indexOf("X")===1 && player2.type.includes("AI"))){
+                    if(turn%2!==0){
+                        if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
+                            playTurn(ai.random(), "X");
+                        }
+                        else{
+                            playTurn(ai.idealSquare(),"X");
+                        }
+                    }
             }
             else{
                 if(turn>1){
-                    if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
+                    if(player1.type.includes("random") || player2.type.includes("random")){
                         playTurn(ai.random(), "O");
                     }
                     else{
                         playTurn(ai.idealSquare(), "O");
                     }
                 }
-
             }
+            }
+
         }
         }
 
