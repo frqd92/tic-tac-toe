@@ -2,13 +2,15 @@
 //ai still wonky
 //make a div that takes half the space of the player info rectangle and it shifts at the turn
 // in the menu, prevent users from clicking on already selected player type
-let historyArr = [];
+let moveHistory=[];
+let allGames=[];
+let indexBoard = [] 
 let turn=1;
-let indexBoard = [];
 const GameBoard = function(){
     function createBoard(){ // start/resets board
         document.querySelector(".board-container").innerHTML="";
         turn=1;
+        moveHistory=[];
         for(let i=0;i<9;i++){
             indexBoard[i]=i;
             const square = document.createElement("div");
@@ -81,6 +83,7 @@ const GameBoard = function(){
                 else{
                     typePlayer2 = ai2.idealSquare; 
                 }
+                let timer;
                 for(let i=0;i<=4;i++){
                     if(turn%2!==0){
                         time(i, "X", typePlayer1)
@@ -92,8 +95,18 @@ const GameBoard = function(){
                     }         
                 }
                 function time(i, mark, aiType){
-                    setTimeout(()=>{playTurn(aiType(), mark, true)}, 500 * i)
+                    timer = setTimeout(()=>{
+                        if(checkPattern(indexBoard, mark)){
+                            clear(timer);
+                            return;
+                        }
+                        playTurn(aiType(), mark, true);
+                    }, 500 * i);
+                    function clear(timer){
+                        clearTimeout(timer)
+                    }
                 }
+
             }
             else if(player1.type === "Human" || player2.type==="Human"){
                 if( (checkPlayerMark().indexOf("X")===0 && player1.type.includes("AI")) || 
@@ -122,6 +135,7 @@ const GameBoard = function(){
         }
     function playTurn(id, player){
         if(turn>9 && !checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){ //tie
+            allGames.push(moveHistory)
             whoWon(null);
             return;
         }
@@ -129,12 +143,13 @@ const GameBoard = function(){
             indexBoard[id]=player;
             document.getElementById(id).textContent=player;  
             turn++;   
-            historyArr.push({mark: player, id: parseInt(id)})
-            //console.log(historyArr)
+            moveHistory.push({mark: player, id: parseInt(id)})
         }
         if(checkPattern(indexBoard, player)){   //win
             let winner = checkPattern(indexBoard, player);
             whoWon(winner);
+            allGames.push(moveHistory)
+            console.log(allGames)
         }
 
         //delete
@@ -254,7 +269,7 @@ const AI = function(board, aiMark){
     return{random, idealSquare}
 }
 
-
+//game Creation
 const game = GameBoard();
 game.createBoard()
 //------------------------------------------------------------------------------------------//
@@ -265,7 +280,6 @@ resetBtn.addEventListener("click", ()=>{game.createBoard()});
 //toggle player
 const toggleContainer = document.querySelectorAll(".toggle-container");
 toggleContainer.forEach(elem=>elem.addEventListener("click", toggleLogic));
-
 function toggleLogic(){
     game.createBoard();
     toggle1 = document.querySelector(".toggle-1")
@@ -282,7 +296,7 @@ function toggleLogic(){
     }
 }
 //------------------------------------------------------------------------------------------//
-
+//Select player type menu
 const selectMenu=function(className, index){
     const select = document.querySelector(`.${className}`);
     const menu = document.querySelector(`.menu-${index}`);
@@ -295,24 +309,22 @@ const selectMenu=function(className, index){
             elem.textContent===text.textContent?elem.style.background="rgba(0, 21, 255, 0.356)": elem.style.background="";
                 elem.addEventListener("click", liFunc, {once:true})
         })
+        select.removeEventListener("click", showMenu);
     }
     function liFunc(e){
         e.stopPropagation();
         text.textContent = e.target.textContent
         menu.style.visibility="hidden";
-        select.addEventListener("click", showMenu, {once:true});
+        select.addEventListener("click", showMenu);
         if(e.target.textContent.includes("AI")){
             const aiChange = GameBoard();
             aiChange.menuRouter(e.target.textContent);
         }
-
     }
-    
-
-    window.addEventListener("click", e=>{
-        console.log(!e.target.className.includes("drop-down"))
+    window.addEventListener("click", e=>{ //close menu when clicking outside of it
         if(!e.target.className.includes("drop-down")){
             menu.style.visibility="hidden";
+            select.addEventListener("click", showMenu);
         }
     })
 
