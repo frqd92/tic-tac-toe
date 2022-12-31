@@ -2,7 +2,7 @@ const AI = function(board, aiMark){
 
     function idealSquare(){
 
-        return miniMax(board, aiMark);
+        return miniMax(board, aiMark).index;
   
     }
 
@@ -11,16 +11,16 @@ const AI = function(board, aiMark){
         let emptySquares = freeSpots();
         let opponent = player==="X"?"O":"X";
 
-        
+
         //check for terminal state
         if(checker.checkPattern(board, aiMark)){
-            return 100;
+            return {points: 100};
         }
         else if(checker.checkPattern(board, opponent)){
-            return -100;
+            return {points: -100};
         }
         else if(freeSpots().length===0){
-            return 0;
+            return {points: 0};
         }
 
         let moveHistory = [];
@@ -30,19 +30,18 @@ const AI = function(board, aiMark){
             board[emptySquares[i]]=player;
             if(player===aiMark){
                 let outcome = miniMax(board, opponent);
-                possMove.points = outcome;
+                possMove.points = outcome.points;
             }
             else{
                 let outcome = miniMax(board, aiMark);
-                possMove.points = outcome;
+                possMove.points = outcome.points;
             }
 
 
             board[emptySquares[i]] = possMove.index;
             moveHistory.push(possMove)
-          
         }
-    
+
         let idealMove;
         if(player===aiMark){
             let highestPoint = -Infinity;
@@ -62,8 +61,7 @@ const AI = function(board, aiMark){
                 }
             }
         }
-        //console.log(moveHistory[idealMove])
-        return moveHistory[idealMove].index
+        return moveHistory[idealMove]
     
         
         
@@ -116,13 +114,12 @@ const GameBoard = function(){
             player1.type!=="Human"? ai = AI(indexBoard, player1.marker) : ai = AI(indexBoard, player2.marker);
         }
 
-
         if(id!==null){ //if click comes from square
             //Human vs Human
             if(player1.type==="Human" && player2.type==="Human"){       
                 turn%2!==0?playTurn(id, "X"):playTurn(id, "O");
             }
-            //Human vs AI (if Human is X), only way to change X to ai is from the menu buttons, so menuRouter had to be created. As this function is only executed from square clicking
+            //Human vs AI (if Human is X), only way to change X to ai is from the menu buttons, so menuRouter had to be created.
             if((player1.type==="Human" || player2.type==="Human") && (player1.type!=="Human" || player2.type!=="Human")){
                 if( (checkPlayerMark().indexOf("X")===0 && checkPlayerType()[1].includes("AI")) || 
                     (checkPlayerMark().indexOf("X")===1 && checkPlayerType()[0].includes("AI"))){
@@ -131,7 +128,6 @@ const GameBoard = function(){
                         playTurn(ai.random(), "O");
                     }
                     else if(!checkPlayerType()[0].includes("random") || !checkPlayerType()[1].includes("random")){
-                        console.log("blaah")
                         playTurn(ai.idealSquare(), "O");
                     }
                 }
@@ -154,7 +150,7 @@ const GameBoard = function(){
                         playTurn(ai.random(), "X");
                     }
                     else{
-                        playTurn(ai.idealSquare(), "X");
+                        turn===1?playTurn(ai.random(),"X"):playTurn(ai.idealSquare(),"X");
                     }
                   
                 }
@@ -165,7 +161,6 @@ const GameBoard = function(){
                         playTurn(ai.random(), "O");
                     }
                     else{
-                        console.log("shiiet")
                         playTurn(ai.idealSquare(), "O");
                     }
                 }
@@ -193,10 +188,10 @@ const GameBoard = function(){
   
 
 
-        const testing = document.querySelector(".testdiv")
-        testarr.push(player)
-        testing.innerHTML = `
-        arr: ${indexBoard} <br> turn: ${turn} <br> plays: ${testarr} <br> `
+        // const testing = document.querySelector(".testdiv")
+        // testarr.push(player)
+        // testing.innerHTML = `
+        // arr: ${indexBoard} <br> turn: ${turn} <br> plays: ${testarr} <br> `
     }
 
     function checkPattern(board, mark){
