@@ -1,72 +1,8 @@
 //bugs: when playing human vs human and changing O player turn to AI when it's human's turn it plays O again.
 //ai still wonky
-
-const AI = function(board, aiMark){
-    function idealSquare(){
-        return miniMax(board, aiMark).index;
-    }
-
-    function miniMax(board, player){
-        const checker = GameBoard(); //how to assign this without running it?
-        let emptySquares = freeSpots();
-        let opponent = player==="X"?"O":"X";
-
-        //check for terminal state
-        if(checker.checkPattern(board, aiMark)){return {points: 100};}
-        else if(checker.checkPattern(board, opponent)){return {points: -100};}
-        else if(freeSpots().length===0){return {points: 0};}
-
-        let moveHistory = [];
-        for(let i=0;i<emptySquares.length;i++){
-            let possMove = {};
-            possMove.index = board[emptySquares[i]];
-            board[emptySquares[i]]=player;
-            if(player===aiMark){
-                let outcome = miniMax(board, opponent);
-                possMove.points = outcome.points;
-            }
-            else{
-                let outcome = miniMax(board, aiMark);
-                possMove.points = outcome.points;
-            }
-            board[emptySquares[i]] = possMove.index;
-            moveHistory.push(possMove)
-        }
-        let idealMove;
-        if(player===aiMark){
-            let highestPoint = -Infinity;
-            for(let i=0;i<moveHistory.length;i++){
-                if(moveHistory[i].points > highestPoint){
-                    highestPoint = moveHistory[i].points;
-                    idealMove=i;
-                }
-            }
-        }
-        else{
-            let highestPoint = Infinity;
-            for(let i=0;i<moveHistory.length;i++){
-                if(moveHistory[i].points < highestPoint){
-                    highestPoint = moveHistory[i].points;
-                    idealMove=i;
-                }
-            }
-        }
-        return moveHistory[idealMove]
-    }
-
-    function random(){
-        return freeSpots()[Math.floor(Math.random() * freeSpots().length)]
-    }
-
-    function freeSpots(){
-        return board.filter(elem=> typeof elem ==="number");
-    }
-
-    return{random, idealSquare}
-}
-
-
-let testarr = [];
+//make a div that takes half the space of the player info rectangle and it shifts at the turn
+// in the menu, prevent users from clicking on already selected player type
+let historyArr = [];
 let turn=1;
 let indexBoard = [];
 const GameBoard = function(){
@@ -82,16 +18,10 @@ const GameBoard = function(){
             square.addEventListener("click", turnClickRouter, {once:true});
             }
         }
-  
-    function turnClickRouter(e){
-        if(!e.target.textContent){
-            moveRouter(e.target.id) 
-        }
+    function turnClickRouter(e){if(!e.target.textContent){moveRouter(e.target.id)}};
 
-    }
-    function menuRouter(){
-        moveRouter(null)
-    }
+    function menuRouter(){moveRouter(null)};
+
     function moveRouter(id){
         const player1 = playerObjects()[0];
         const player2 = playerObjects()[1];
@@ -191,42 +121,40 @@ const GameBoard = function(){
 
         }
         }
-
-    function playTurn(id, player, aiVSai){
-        if(!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){
+    function playTurn(id, player){
+        if(turn>9 && !checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){ //tie
+            whoWon(null);
+            return;
+        }
+        if(!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){ //gameplay
             indexBoard[id]=player;
             document.getElementById(id).textContent=player;  
             turn++;   
-            testarr.push({mark: player, id: id})
-            console.log(testarr)
+            historyArr.push({mark: player, id: parseInt(id)})
+            console.log(historyArr)
         }
-   
-        if(checkPattern(indexBoard, player)){
+        if(checkPattern(indexBoard, player)){   //win
             console.log("gameover")
             let winner = checkPattern(indexBoard, player);
             whoWon(winner);
-
         }
 
-    
-        if(turn>9){
-            //console.log("gameover")
-        }
         //delete
         const testing = document.querySelector(".testdiv")
         testing.style.display = "block"
         testing.innerHTML = `
         arr: ${indexBoard} <br> turn: ${turn} <br> `
-
         //delete
     }
-
     function whoWon(winner){
-        const squares = document.querySelectorAll(".square");
-        let winArray = winner.indexOfWin;
-        winArray.forEach((e,i)=>{squares[winArray[i]].style.background = 'rgba(60, 69, 127, 0.344)';})
-
-        
+        if(!winner){
+            console.log("tie")
+        }
+        else{
+            const squares = document.querySelectorAll(".square");
+            let winArray = winner.indexOfWin;
+            winArray.forEach((e,i)=>{squares[winArray[i]].style.background = 'rgba(60, 69, 127, 0.344)';})
+        }
     }
     function checkPattern(board, mark){
         const winArray = [ [0,4,8], [2,4,6], [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8] ];
@@ -266,27 +194,72 @@ const GameBoard = function(){
         }
         return [player1, player2]
     }
-
-
-
-
-
-    // document.getElementById("history-btn").addEventListener("click", (e)=>{
-    // // console.log(checkPlayerMark()[0], checkPlayerType()[0])
-    // // console.log(checkPlayerMark()[1], checkPlayerType()[1])
-
-    // console.log(indexBoard)
-    // console.log("turn: " + turn)
-    // })
-
     return {createBoard, menuRouter, checkPattern}
 }
 
+const AI = function(board, aiMark){
+    function idealSquare(){
+        return miniMax(board, aiMark).index;
+    }
+    function miniMax(board, player){
+        const checker = GameBoard(); //how to assign this without running it?
+        let emptySquares = freeSpots();
+        let opponent = player==="X"?"O":"X";
 
+        //check for terminal state
+        if(checker.checkPattern(board, aiMark)){return {points: 100};}
+        else if(checker.checkPattern(board, opponent)){return {points: -100};}
+        else if(freeSpots().length===0){return {points: 0};}
 
+        let moveHistory = [];
+        for(let i=0;i<emptySquares.length;i++){
+            let possMove = {};
+            possMove.index = board[emptySquares[i]];
+            board[emptySquares[i]]=player;
+            if(player===aiMark){
+                let outcome = miniMax(board, opponent);
+                possMove.points = outcome.points;
+            }
+            else{
+                let outcome = miniMax(board, aiMark);
+                possMove.points = outcome.points;
+            }
+            board[emptySquares[i]] = possMove.index;
+            moveHistory.push(possMove)
+        }
+        let idealMove;
+        if(player===aiMark){
+            let highestPoint = -Infinity;
+            for(let i=0;i<moveHistory.length;i++){
+                if(moveHistory[i].points > highestPoint){
+                    highestPoint = moveHistory[i].points;
+                    idealMove=i;
+                }
+            }
+        }
+        else{
+            let highestPoint = Infinity;
+            for(let i=0;i<moveHistory.length;i++){
+                if(moveHistory[i].points < highestPoint){
+                    highestPoint = moveHistory[i].points;
+                    idealMove=i;
+                }
+            }
+        }
+        return moveHistory[idealMove]
+    }
 
+    function random(){
+        console.log("random")
+        return freeSpots()[Math.floor(Math.random() * freeSpots().length)]
+    }
 
+    function freeSpots(){
+        return board.filter(elem=> typeof elem ==="number");
+    }
 
+    return{random, idealSquare}
+}
 
 
 const game = GameBoard();
@@ -345,58 +318,3 @@ const selectMenu=function(className, index){
 const selectLeft = selectMenu("drop-1", 1);
 const selectRight = selectMenu("drop-2", 2);
 
-
-
-
-/*
-
-        let player1 = checkPlayerMark()[0];
-        let player2 = checkPlayerMark()[1];
-        let player1Type =checkPlayerType()[0];
-        let player2Type =checkPlayerType()[1];
-        let aiPlayer = AI(indexBoard);
-
-        if(turn>9){
-            console.log(turn)
-        }
-     
-        if(player1Type==="Human" && player2Type==="Human"){                            //Human vs Human
-            turn%2===0?playTurn(squareId,player2):playTurn(squareId,player1);
-        }
-
-----------------------------
-
-        if(player1Type.includes("AI") || player2Type.includes("AI")){
-            if(player1Type==="Human" || player2Type==="Human"){                    //human vs AI
-
-                if(player1Type==="Human"){
-                    playTurn(squareId,player1)
-                    setTimeout(()=>playTurn(aiPlayer.random(), player2),300);
-                }
-                else{
-                    playTurn(squareId,player2)
-                    setTimeout(()=>playTurn(aiPlayer.random(), player1),300);
-                }
-
-            }
-        }
-----------------------------------
-    //where you left off
-    function selectRouter(type, select){ //in case player type is changed to ai midgame
-        let ai = AI(indexBoard);
-        console.log(select)
-        console.log(document.querySelector(`.${select}`).innerText)
-        
-        if(turn%2==0 && document.querySelector(`.${select}`).innerText.includes("AI")){
-            playTurn(ai.random(), "O")
-       }
-       else if(turn>1){
-        playTurn(ai.random(), "X")
- 
-       }
-    };
-
-
-
-
-*/
