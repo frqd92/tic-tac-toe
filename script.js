@@ -141,21 +141,28 @@ const GameBoard = function(){
                 const ai2 = AI(indexBoard, "X");
                 const ai3 = AI(indexBoard, "O");
 
-                while(!checkPattern(indexBoard, "X") &&!checkPattern(indexBoard, "O")){
-                    playTurn(ai2.random(), "X", true)
-                    playTurn(ai3.random(), "O", true)
+                for(let i=0;i<=4;i++){
+                        (function() {
+                            let xTime = setTimeout(function() { 
+                                playTurn(ai2.random(), "X", true)
+                                if(checkPattern(indexBoard, "X")){console.log("helloX"); clearTimeout(xTime); return}
+                             }, i * 500);
+                        })(i);
+                        (function() {
+                            let yTime = setTimeout(function() { 
+                                playTurn(ai3.random(), "O", true)
+                                if(checkPattern(indexBoard, "O")){console.log("helloY"); clearTimeout(yTime); return}
+                             }, i * 800);
+                        })(i);
                 }
 
-                
 
-
-                
-
-                
-                
-
-
-
+                function timeOutX(){
+                        playTurn(ai2.random(), "X", true)
+                }
+                function timeOutY(){
+                        playTurn(ai3.random(), "O", true)
+                }
             }
             else if(player1.type === "Human" || player2.type==="Human"){
                 if( (checkPlayerMark().indexOf("X")===0 && player1.type.includes("AI")) || 
