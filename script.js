@@ -81,7 +81,7 @@ const GameBoard = function(){
                     typePlayer2 = ai3.random; 
                 }
                 else{
-                    typePlayer2 = ai2.idealSquare; 
+                    typePlayer2 = ai3.idealSquare; 
                 }
                 let timer;
                 for(let i=0;i<=4;i++){
@@ -161,7 +161,7 @@ const GameBoard = function(){
     }
     function whoWon(winner){
         if(!winner){
-            console.log("tie")
+            //console.log("tie")
         }
         else{
             const squares = document.querySelectorAll(".square");
@@ -212,6 +212,7 @@ const GameBoard = function(){
 
 const AI = function(board, aiMark){
     function idealSquare(){
+        console.log("minimax" + aiMark)
         return miniMax(board, aiMark).index;
     }
     function miniMax(board, player){
@@ -262,7 +263,7 @@ const AI = function(board, aiMark){
         return moveHistory[idealMove]
     }
 
-    function random(){return freeSpots()[Math.floor(Math.random() * freeSpots().length)]}
+    function random(){console.log("random"); return freeSpots()[Math.floor(Math.random() * freeSpots().length)]}
 
     function freeSpots(){return board.filter(elem=> typeof elem ==="number");}
 
