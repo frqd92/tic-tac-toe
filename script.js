@@ -141,15 +141,12 @@ const GameBoard = function(){
             moveHistory.push({mark: player, id: parseInt(id)})
         }
         if(checkPattern(indexBoard, player)){   //win
-            console.log("2")
-
             let winner = checkPattern(indexBoard, player);
             declareWinner(winner);
-            moveHistory.push(detectWinnerName(winner.mark))
+            moveHistory.push(detectWinnerName(winner.mark), winner.indexOfWin)
             allGames.push(moveHistory)
         }
         else if(turn>9){ //tie
-            console.log("1")
             moveHistory.push("tie")
             allGames.push(moveHistory)
             declareWinner(null);
@@ -385,11 +382,24 @@ historyBtn.addEventListener("click", showHistory);
 let isHistory=false;
 function showHistory(){
     if(!isHistory){
-        document.querySelector(".history-mode").style.display="grid";
+        const historyGrid = document.querySelector(".history-mode");
+        historyGrid.innerHTML="";
+        historyGrid.style.display="grid";
         document.querySelector(".board-container").style.display="none";
         historyBtn.textContent="Close History"
+    
         for(let i=0;i<allGames.length;i++){
-            historyMaker(allGames[i]);
+            let cutArr = 0, winner, winPattern;
+            if(allGames[i][allGames[i].length-1]!=="tie"){
+                winner = allGames[i][allGames[i].length-2];
+                winPattern = allGames[i][allGames[i].length-1];
+                cutArr=2;
+            }
+            else {cutArr=1};
+            const moves = [...allGames[i]];
+            moves.splice(moves.length-cutArr, cutArr)
+            let row = historyFactory(moves, winner, winPattern, i);
+
         }
         isHistory=true;
     }
@@ -399,11 +409,147 @@ function showHistory(){
         historyBtn.textContent="Game History"
         isHistory=false;
     }
+}
+const historyFactory = (moves, winner, winPattern, index)=>{
+    const gameMoves = moves;
+    const gameWinner = winner;
+    const pattern = winPattern;
+    const container = document.querySelector(".history-mode");
+    const littleContainer = document.createElement("div")
+    const row = document.createElement("div");
+    const text = document.createElement("p");
+    const playBtn = document.createElement("img");
 
-
-
+    text.innerText = gameWinner===undefined?"Tie Game":`${winner} wins!`;
+    playBtn.setAttribute("src", "icons/play.svg");
+    playBtn.classList.add(`btn-${index}`)
+    row.classList.add("history-row");
+    littleContainer.classList.add("little-container");
+    for(let i=0;i<9;i++){
+        const miniSquare = document.createElement("div");
+        miniSquare.classList.add("mini-square");
+        littleContainer.appendChild(miniSquare);
+    }
+    row.appendChild(littleContainer);
+    row.appendChild(text);
+    row.appendChild(playBtn)    
+    container.prepend(row)
+    boardMarks(littleContainer, pattern)
+    playBtn.addEventListener("click", ()=>{
+        replayGame(littleContainer, pattern)
+    });
+    function boardMarks(container, pattern){
+        container.querySelectorAll(".mini-square").forEach((elem,i)=>{
+            if(pattern!==undefined){
+                if(i===pattern[0]||i===pattern[1]||i===pattern[2]){
+                    elem.style.background="red"
+                }
+            }
+            for(let x=0;x<gameMoves.length;x++){
+                if(i===gameMoves[x].id){
+                    elem.textContent=moves[x].mark;
+                }
+            }
+        })
+    }
+    function replayGame(container, pattern){
+        container.querySelectorAll(".mini-square").forEach((elem, index)=>{
+            elem.innerText="";
+            elem.style.background="";
+            let timer;
+            gameMoves.forEach((arrElem, arrInd)=>{
+                if(gameMoves[arrInd].id ===index){
+                    timeSquare(arrInd);
+                }
+            })
+            function timeSquare(arrInd){
+                timer = setTimeout(()=>{
+                    elem.innerText=gameMoves[arrInd].mark;
+                    if(arrInd===gameMoves.length-1){
+                        boardMarks(container, pattern);
+                        clearTimeout(timer);
+                    }
+                },300*arrInd)
+            }
+        })
+    }
+    return {}
 }
 
-const historyMaker = (historyArr)=>{
-    
-}
+
+
+
+
+// const historyFactory = (winner, winPattern, moves)=>{
+//     let arr = allGames;
+//     const winner = arr[arr.length-1]==="tie"?null:arr[arr.length-2];
+//     const pattern = winner!==null?arr[arr.length-1]:null;
+//     winner!==null?arr.splice([arr.length-2], 2):arr.splice([arr.length-1], 1);
+//     function makeRow(arr){
+//         const container = document.querySelector(".history-mode");
+//         const row = document.createElement("div");
+//         const text = document.createElement("p");
+//         const playBtn = document.createElement("img");
+//         playBtn.classList.add("play-btn")
+//         playBtn.setAttribute("src", "icons/play.svg");
+//         text.innerText = winner===null?"Tie Game":`${winner} wins!`;
+//         row.classList.add("history-row");
+//         const littleContainer = document.createElement("div")
+//         littleContainer.classList.add("little-container");
+//         for(let i=0;i<9;i++){
+//             const miniSquare = document.createElement("div");
+//             miniSquare.classList.add("mini-square");
+//             littleContainer.appendChild(miniSquare);
+//         }
+//         row.appendChild(littleContainer);
+//         row.appendChild(text);
+//         row.appendChild(playBtn)    
+//         container.prepend(row)
+//         miniBoardMarks(pattern);
+ 
+//         playBtn.addEventListener("click", replayGame)
+//         function replayGame(){
+//             document.querySelectorAll(".mini-square").forEach((elem, index)=>{
+//                 elem.innerText="";
+//                 elem.style.background="";
+//                 let timer;
+
+//                 arr.forEach((arrElem, arrInd)=>{
+//                     if(arr[arrInd].id ===index){
+//                         timeSquare(arrInd);
+//                     }
+//                 })
+//                 function timeSquare(arrInd){
+//                     timer = setTimeout(()=>{
+//                         elem.innerText=arr[arrInd].mark;
+//                         if(arrInd===arr.length-1){
+//                             miniBoardMarks(pattern, arr);
+//                             clearTimeout(timer);
+//                         }
+//                     },300*arrInd)
+//                 }
+//             })
+//         }
+
+//     }
+
+//     function miniBoardMarks(pattern){
+//         console.log(arr)
+//         document.querySelectorAll(".mini-square").forEach((elem,i)=>{
+//             if(pattern!==null){
+//                 if(i===pattern[0]||i===pattern[1]||i===pattern[2]){
+//                     elem.style.background="red"
+//                 }
+//             }
+//             for(let x=0;x<arr.length;x++){
+//                 if(i===arr[x].id){
+//                     elem.textContent=arr[x].mark;
+//                 }
+//             }
+//         })
+//     }
+
+
+//     return {makeRow}
+// }
+
