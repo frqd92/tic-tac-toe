@@ -1,5 +1,5 @@
-//bugs: when playing human vs human and changing O player turn to AI when it's human's turn it plays O again.
-//ai still wonky
+
+//in ai vs ai, sometimes it thinks random is
 //make a div that takes half the space of the player info rectangle and it shifts at the turn
 // in the menu, prevent users from clicking on already selected player type
 let moveHistory=[];
@@ -66,23 +66,12 @@ const GameBoard = function(){
                 }
             }
         }
-
         else{ //if click comes from player type selection
             if(checkPlayerType()[0].includes("AI") && checkPlayerType()[1].includes("AI")){ //AI VS AI
                 const ai2 = AI(indexBoard, "X");
                 const ai3 = AI(indexBoard, "O");
-                if(player1.type.includes("random")){
-                    typePlayer1 = ai2.random; 
-                }
-                else{
-                    typePlayer1 = ai2.idealSquare;
-                }
-                if(player2.type.includes("random")){
-                    typePlayer2 = ai3.random; 
-                }
-                else{
-                    typePlayer2 = ai3.idealSquare; 
-                }
+                player1.type.includes("random")?typePlayer1 = ai2.random:typePlayer1 = ai2.idealSquare;
+                player2.type.includes("random")?typePlayer2 = ai3.random:typePlayer2 = ai3.idealSquare;
                 let timer;
                 for(let i=0;i<=4;i++){
                     if(turn%2!==0){
@@ -90,17 +79,17 @@ const GameBoard = function(){
                         time(i, "O", typePlayer2)
                     }
                     else{
-                        time(i, "O", typePlayer2)
-                        time(i, "X", typePlayer1)
+                        time(i, "O", typePlayer1)
+                        time(i, "X", typePlayer2)
                     }         
                 }
                 function time(i, mark, aiType){
                     timer = setTimeout(()=>{
-                        if(checkPattern(indexBoard, mark)){
+                        if(checkPattern(indexBoard, mark) || turn>10){
                             clear(timer);
                             return;
                         }
-                        playTurn(aiType(), mark, true);
+                        playTurn(aiType(), mark);
                     }, 500 * i);
                     function clear(timer){
                         clearTimeout(timer)
@@ -132,24 +121,27 @@ const GameBoard = function(){
             }
             }
         }
-        }
+    }
     function playTurn(id, player){
-        if(turn>9 && !checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){ //tie
-            allGames.push(moveHistory)
-            whoWon(null);
-            return;
-        }
         if(!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){ //gameplay
             indexBoard[id]=player;
-            document.getElementById(id).textContent=player;  
+            if(indexBoard.filter(elem=>typeof elem!=="number").length<=9){
+                document.getElementById(id).textContent=player;  
+            }
             turn++;   
             moveHistory.push({mark: player, id: parseInt(id)})
         }
         if(checkPattern(indexBoard, player)){   //win
+            console.log("winwin")
             let winner = checkPattern(indexBoard, player);
             whoWon(winner);
             allGames.push(moveHistory)
             console.log(allGames)
+        }
+        else if(turn>9){ //tie
+            allGames.push(moveHistory)
+            whoWon(null);
+            return;
         }
 
         //delete
@@ -161,12 +153,13 @@ const GameBoard = function(){
     }
     function whoWon(winner){
         if(!winner){
-            //console.log("tie")
+            declareResult();
         }
         else{
             const squares = document.querySelectorAll(".square");
             let winArray = winner.indexOfWin;
             winArray.forEach((e,i)=>{squares[winArray[i]].style.background = 'rgba(60, 69, 127, 0.344)';})
+            declareResult(winner.mark)
         }
     }
     function checkPattern(board, mark){
@@ -210,6 +203,7 @@ const GameBoard = function(){
     return {createBoard, menuRouter, checkPattern}
 }
 
+//factory function for AI players
 const AI = function(board, aiMark){
     function idealSquare(){
         console.log("minimax" + aiMark)
@@ -263,7 +257,7 @@ const AI = function(board, aiMark){
         return moveHistory[idealMove]
     }
 
-    function random(){console.log("random"); return freeSpots()[Math.floor(Math.random() * freeSpots().length)]}
+    function random(){console.log("random"+ aiMark ); return freeSpots()[Math.floor(Math.random() * freeSpots().length)]}
 
     function freeSpots(){return board.filter(elem=> typeof elem ==="number");}
 
@@ -276,7 +270,7 @@ game.createBoard()
 //------------------------------------------------------------------------------------------//
 //Reset Button
 const resetBtn = document.getElementById("reset-btn");
-resetBtn.addEventListener("click", ()=>{game.createBoard()});
+resetBtn.addEventListener("click", ()=>game.createBoard());
 //------------------------------------------------------------------------------------------//
 //toggle player
 const toggleContainer = document.querySelectorAll(".toggle-container");
@@ -333,3 +327,30 @@ const selectMenu=function(className, index){
 const selectLeft = selectMenu("drop-1", 1);
 const selectRight = selectMenu("drop-2", 2);
 
+window.addEventListener("click",(e)=>{
+    if(e.target.textContent==="Game History"){
+        console.log(allGames)
+    }
+})
+
+//------------------------------------------------------------------------------------------//
+//Winner announcer
+function declareResult(mark){
+    let player;
+    if(mark){
+        document.querySelector(".toggle-1").innerText===mark?player = document.getElementById("input-1").value:player = document.getElementById("input-2").value;
+    }
+    const modal = document.querySelector(".winner-announce");
+    const text = document.createElement("p");
+    const playAgainBtn = document.createElement("button");
+    playAgainBtn.addEventListener("click", ()=>{
+        game.createBoard();
+        modal.innerHTML="";
+        modal.style.display="none";
+    })
+    modal.style.display="flex";
+    modal.appendChild(text);
+    modal.appendChild(playAgainBtn)
+    text.textContent = player? `${player} is the winner!`: `Tie!`;
+    playAgainBtn.textContent='Play Again?'
+}

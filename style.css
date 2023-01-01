@@ -23,7 +23,7 @@ body{
     border-radius: 10px;
     display: grid;
     grid-template-rows: 2fr 10fr 1fr;
-
+    position: relative;
 }
 
 .info-container{
@@ -169,7 +169,20 @@ input{
 .menu li:hover{
     background-color: aliceblue;
 }
-
+/* ------------------------------------------------------------------------------ */
+.winner-announce{
+    display: none;
+    position: absolute;
+    border-radius: 8px;
+    width: 300px;
+    height: 200px;
+    background: rgb(143, 142, 142);
+    top: calc(50% - 150px);
+    left: calc(50% - 150px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 
 @media only screen and (max-width: 650px){
