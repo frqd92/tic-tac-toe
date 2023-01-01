@@ -1,7 +1,16 @@
 
-//in ai vs ai, sometimes it thinks random is
+//in ai vs ai, sometimes it thinks random is minimax
+
 //make a div that takes half the space of the player info rectangle and it shifts at the turn
-// in the menu, prevent users from clicking on already selected player type
+
+
+//if reset board and ai vs ai, doesn't work unless click ai from menu again
+//solution could be - if ai vs ai and turn is 1. reset btn displays "Fight robots!" instead of reset board
+
+
+
+//try setting settimeout in minimax and not move router
+
 let moveHistory=[];
 let allGames=[];
 let indexBoard = [] 
@@ -132,15 +141,18 @@ const GameBoard = function(){
             moveHistory.push({mark: player, id: parseInt(id)})
         }
         if(checkPattern(indexBoard, player)){   //win
-            console.log("winwin")
+            console.log("2")
+
             let winner = checkPattern(indexBoard, player);
-            whoWon(winner);
+            declareWinner(winner);
+            moveHistory.push(detectWinnerName(winner.mark))
             allGames.push(moveHistory)
-            console.log(allGames)
         }
         else if(turn>9){ //tie
+            console.log("1")
+            moveHistory.push("tie")
             allGames.push(moveHistory)
-            whoWon(null);
+            declareWinner(null);
             return;
         }
 
@@ -151,7 +163,7 @@ const GameBoard = function(){
         arr: ${indexBoard} <br> turn: ${turn} <br> `
         //delete
     }
-    function whoWon(winner){
+    function declareWinner(winner){
         if(!winner){
             declareResult();
         }
@@ -161,6 +173,9 @@ const GameBoard = function(){
             winArray.forEach((e,i)=>{squares[winArray[i]].style.background = 'rgba(60, 69, 127, 0.344)';})
             declareResult(winner.mark)
         }
+    }
+    function detectWinnerName(mark){
+        return document.querySelector(".toggle-1").innerText===mark?document.getElementById("input-1").value:document.getElementById("input-2").value;
     }
     function checkPattern(board, mark){
         const winArray = [ [0,4,8], [2,4,6], [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8] ];
@@ -322,7 +337,6 @@ const selectMenu=function(className, index){
             select.addEventListener("click", showMenu);
         }
     })
-
 }   
 const selectLeft = selectMenu("drop-1", 1);
 const selectRight = selectMenu("drop-2", 2);
@@ -341,16 +355,55 @@ function declareResult(mark){
         document.querySelector(".toggle-1").innerText===mark?player = document.getElementById("input-1").value:player = document.getElementById("input-2").value;
     }
     const modal = document.querySelector(".winner-announce");
-    const text = document.createElement("p");
-    const playAgainBtn = document.createElement("button");
-    playAgainBtn.addEventListener("click", ()=>{
-        game.createBoard();
-        modal.innerHTML="";
-        modal.style.display="none";
-    })
-    modal.style.display="flex";
-    modal.appendChild(text);
-    modal.appendChild(playAgainBtn)
-    text.textContent = player? `${player} is the winner!`: `Tie!`;
-    playAgainBtn.textContent='Play Again?'
+    if(modal.childNodes.length<1){
+        const text = document.createElement("p");
+        const playAgainBtn = document.createElement("button");
+        const modalBg = document.querySelector(".bg");
+        modalBg.style.display="block";
+        playAgainBtn.addEventListener("click", closeModal);
+        modal.style.display="grid";
+        modal.appendChild(text);
+        modal.appendChild(playAgainBtn)
+        text.textContent = player? `${player} is the winner!`: `Tie!`;
+        playAgainBtn.textContent='Play Again?'
+        function closeModal(e){
+            if(e!=="noReset"){
+                game.createBoard();
+            }
+            modal.innerHTML="";
+            modal.style.display="none";
+            modalBg.style.display="none";
+        }
+        modalBg.addEventListener("click", ()=>{ closeModal("noReset")})
+    }
+}
+
+//------------------------------------------------------------------------------------------//
+//Game History
+const historyBtn = document.getElementById("history-btn");
+historyBtn.addEventListener("click", showHistory);
+let isHistory=false;
+function showHistory(){
+    if(!isHistory){
+        document.querySelector(".history-mode").style.display="grid";
+        document.querySelector(".board-container").style.display="none";
+        historyBtn.textContent="Close History"
+        for(let i=0;i<allGames.length;i++){
+            historyMaker(allGames[i]);
+        }
+        isHistory=true;
+    }
+    else{
+        document.querySelector(".history-mode").style.display="none";
+        document.querySelector(".board-container").style.display="grid";
+        historyBtn.textContent="Game History"
+        isHistory=false;
+    }
+
+
+
+}
+
+const historyMaker = (historyArr)=>{
+    
 }
