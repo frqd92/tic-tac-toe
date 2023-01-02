@@ -38,11 +38,10 @@ const GameBoard = function(){
                     if(!document.querySelector(".AI-btn")){
                         document.querySelector(".info-container").append(aiBtn)
                     }
-
                     aiBtn.addEventListener("click",()=>{
                         createBoard()
                         menuRouter()
-                    }, {once:true} )
+                    },{once:true});
                 }
             }
         }
@@ -83,12 +82,7 @@ const GameBoard = function(){
                 }
                 else{
                     playTurn(id, "O");
-                    if(player1.type.includes("random") || player2.type[1].includes("random")){
-                        playTurn(ai.random(), "X");
-                    }
-                    else{
-                        playTurn(ai.idealSquare(), "X");
-                    }
+                    player1.type.includes("random") || player2.type[1].includes("random")?playTurn(ai.random(), "X"):playTurn(ai.idealSquare(), "X");
                 }
             }
         }
@@ -151,15 +145,17 @@ const GameBoard = function(){
     function playTurn(id, player){
         if(!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){ //gameplay
             indexBoard[id]=player;
+            console.log(indexBoard.filter(elem=>typeof elem!=="number"))
             if(indexBoard.filter(elem=>typeof elem!=="number").length<=9){
                 if(document.getElementById(id)!==null){
                     document.getElementById(id).innerText=player;
                     document.querySelectorAll(".square")[id].classList.remove("square-hover");
+                    turn++;   
+                    moveHistory.push({mark: player, id: parseInt(id)})
                 }
-                 
             }
-            turn++;   
-            moveHistory.push({mark: player, id: parseInt(id)})
+
+            //console.log(moveHistory)
         }
         if(checkPattern(indexBoard, player)){   //win
             let winner = checkPattern(indexBoard, player);
@@ -167,17 +163,23 @@ const GameBoard = function(){
             moveHistory.push(detectWinnerName(winner.mark), winner.indexOfWin)
             allGames.push(moveHistory)
         }
-        else if(!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O") && turn>9){ //tie
-            moveHistory.push("tie")
-            allGames.push(moveHistory)
+        else if((!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")) && turn>9){ //tie
+            console.log("tie")
+            console.log(allGames)
+            if(!moveHistory.includes("tie")){
+                moveHistory.push("tie")
+                allGames.push(moveHistory)
+            }
+
+            console.log(allGames)
             declareWinner(null);
-            return;
+
         }
         turnIndicator();
 
     }
     function declareWinner(winner){
-        if(!winner){
+        if(winner===null){
             declareResult();
         }
         else{
@@ -393,7 +395,7 @@ const selectLeft = selectMenu("drop-1", 1);
 const selectRight = selectMenu("drop-2", 2);
 
 window.addEventListener("click",(e)=>{
-    if(e.target.textContent==="Github"){
+    if(e.target.textContent==="VS"){
         console.log(allGames)
     }
 })
@@ -519,6 +521,7 @@ const historyFactory = (moves, winner, winPattern, index)=>{
     playBtn.addEventListener("click", replayRoute);
     function replayRoute(){replayGame(littleContainer, pattern, speed)}
     function boardMarks(container, pattern){
+  
         container.querySelectorAll(".mini-square").forEach((elem,i)=>{
             if(pattern!==undefined){
                 if(i===pattern[0]||i===pattern[1]||i===pattern[2]){
