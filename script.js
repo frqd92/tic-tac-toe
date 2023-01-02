@@ -313,6 +313,7 @@ const AI = function(board, aiMark){
 //game Creation
 const game = GameBoard();
 game.createBoard()
+document.getElementById("input-1").focus();
 //------------------------------------------------------------------------------------------//
 //Reset Button
 const resetBtn = document.getElementById("reset-btn");

@@ -1,4 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p&display=swap');
+/*     font-family: 'M PLUS 1p', sans-serif; */
+@import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
+/* font-family: 'Barlow', sans-serif; */
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap');
+/* font-family: 'Josefin Sans', sans-serif; */
+@import url('https://fonts.googleapis.com/css2?family=Jost&display=swap');
+/* font-family: 'Jost', sans-serif; */
 *{
     padding: 0;
     margin: 0;
@@ -9,15 +17,17 @@ body{
     justify-content: center;
     align-items: center;
     height: 100vh;
+    background: rgb(255, 255, 255);
 }
 
 .main-container{
-    border: 1px solid black;
     padding: 30px 30px 20px 30px;
     border-radius: 10px;
     display: grid;
-    grid-template-rows: 2fr 10fr 1fr;
+    grid-template-rows: 2fr 7fr 1fr;
     position: relative;
+    background: rgba(0, 0, 0, 0.211);
+    box-shadow: rgba(0, 0, 0, 0.25) 50px 50px 78px, rgba(0, 0, 0, 0.22) 20px 8px 30px, rgba(0, 0, 0, 0.12) 10px 14px 16px, rgba(0, 0, 0, 0.17) 0px 0px 13px, rgba(0, 0, 0, 0.3) 0px 0px 15px;
 }
 
 .info-container{
@@ -25,20 +35,26 @@ body{
     position: relative;
     justify-content: space-evenly;
     align-items: center;
-    border: 1px solid black;
+    border: 3px double rgba(0, 0, 0, 0.277);
+    border-radius: 10px;
+    padding: 15px;
+    gap: 20px;
 }
 .turn-div{
     opacity: 0;;
     position: absolute;
     width: 50%;
     left: 0;
-    height: 100%;
-    background-color: rgb(7, 6, 6, 0.2);
+    top: 0;
+    height: 56px;
+    background-color: rgba(0, 0, 0, 0.236);
     z-index: -100;
     transition: all 1s;
+    border-radius: 7px 0px 0px 0px;
 }
 .turn-div-2{
     transform: translate(100%);
+    border-radius: 0px 7px 0px 0px;
 }
 /* ------------------------------------------------------------------------------ */
 
@@ -47,10 +63,10 @@ body{
     width: 100%;
     padding: 0px 5px;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 0.2fr;
     gap:10px;
     justify-content: center;
-    border: 1px solid black;
+    border-top: 3px double rgba(0, 0, 0, 0.277);
     align-items: center;
 }
 .AI-btn{
@@ -66,6 +82,7 @@ body{
     grid-template-columns: repeat(3, 150px);
     grid-template-rows: repeat(3, 150px);
     margin: 20px 0px;
+    justify-self: center;
 }
 /* ------------------------------------------------------------------------------ */
 .history-mode{
@@ -82,6 +99,7 @@ body{
     background: rgba(162, 164, 173, 0.518);
     gap: 5px;
     position: relative;
+    justify-self: center;
 }
 .history-row{
     display: grid;
@@ -138,19 +156,23 @@ body{
 /* ------------------------------------------------------------------------------ */
 
 .square{
-    border: 0.1px solid rgba(168, 162, 162, 0.83);
+    border: 1px solid rgba(0, 0, 0, 0.3);
     cursor: pointer;
     user-select: none;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 7rem;
-    font-family: 'Permanent Marker', cursive;
-    color: rgb(47, 50, 74);
-
+    font-family: 'Questrial', sans-serif;
+    color: rgba(0, 0, 0, 0.586);
+    transition: all 0.3s;
 }
-.square-hover:hover{
-
+.square:hover{
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+    background:rgba(31, 30, 30, 0.137);
+}
+.square:active{
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
 }
 
 .square:first-child,.square:nth-child(2),.square:nth-child(3){
@@ -170,27 +192,41 @@ body{
 .player-container{
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
     align-items: center;
 }
 
 .toggle-container{
     width: 60px;
     height: 25px;
-    border: 1px solid black;
     border-radius: 5px;
     user-select: none;
     cursor: pointer;
+    background: rgba(0, 0, 0, 0.258);
+    box-shadow: rgba(0, 0, 0, 0.173) 4px 2px 4px 0px, rgba(0, 0, 0, 0.383) 1px 2px 6px 2px;
+
+
+
+}
+.toggle-container:hover{
+    background: rgba(0, 0, 0, 0.358);
 }
 .toggle{
     border-radius: 5px;
     width: 50%;
     height: 100%;
-    background-color:rgb(168, 168, 193);
-    transition: transform 0.2s linear;
+    background-color:rgb(16, 20, 61);
+    transition: all 0.2s linear;
     transform: none;
     text-align: center;
+    font-family: 'Barlow', sans-serif; 
+    font-size: 1.1rem;
+    color: white;
 }
+.toggle:hover{
+    background-color: rgb(3, 3, 101);
+}
+
 .toggle-1-O{
     transform: translateX(100%);
 }
@@ -204,7 +240,13 @@ body{
 
 
 input{
-  text-align: center;
+    text-align: center;
+    padding: 5px;
+    font-size: 1rem;
+    background-color: rgb(255, 255, 255);
+    outline: none;
+    border: 1px solid blue;
+    font-family: 'M PLUS 1p', sans-serif;
 }
 /* ------------------------------------------------------------------------------ */
 .drop-down{
@@ -217,6 +259,7 @@ input{
     align-items: center;
     padding: 5px;
     cursor: pointer;
+    font-family: 'Jost', sans-serif;
 }
 
 
@@ -280,8 +323,49 @@ input{
     background-color: rgba(0, 0, 0, 0);
     z-index: 50;
 }
+/* ------------------------------------------------------------------------------ */
+.button-container > * {
+    transition: all 0.3s;
+    cursor: pointer;
+}
+#history-btn, #reset-btn{
+    outline: none;
+    border: none;
+    padding: 3px;
+    font-family: 'Jost', sans-serif;
+    font-size: 1.1rem;
+}
+.github{
+    margin-top: calc(50% - 15px);
+    width: 35px;
+    border-radius: 30px;
+    transition: all 0.3s;
+}
+
+.github:hover{
+    -webkit-user-drag: none;
+    transform: scale(1.2);
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+}
+.github:active{
+    transform: scale(1);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+.button-container > button:hover {
+    background: rgba(151, 147, 147, 0.406);
+    transform: scale(1.05);
+}
+.button-container > button:active{
+    transform: scale(1);
+
+}
 
 
+
+
+a{
+    cursor: default;
+}
 @media only screen and (max-width: 650px){
     .board-container{
         grid-template-columns: repeat(3, 100px);
