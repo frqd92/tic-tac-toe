@@ -26,7 +26,7 @@ body{
     display: grid;
     grid-template-rows: 2fr 7fr 1fr;
     position: relative;
-    background: rgba(0, 0, 0, 0.211);
+    background: rgba(85, 84, 84, 0.211);
     box-shadow: rgba(0, 0, 0, 0.25) 50px 50px 78px, rgba(0, 0, 0, 0.22) 20px 8px 30px, rgba(0, 0, 0, 0.12) 10px 14px 16px, rgba(0, 0, 0, 0.17) 0px 0px 13px, rgba(0, 0, 0, 0.3) 0px 0px 15px;
 }
 
@@ -46,15 +46,16 @@ body{
     width: 50%;
     left: 0;
     top: 0;
-    height: 56px;
-    background-color: rgba(0, 0, 0, 0.236);
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.062);
+    background: rgba(0, 0, 0, 0.136);
     z-index: -100;
     transition: all 1s;
-    border-radius: 7px 0px 0px 0px;
+    border-radius: 7px 0px 0px 7px;
 }
 .turn-div-2{
     transform: translate(100%);
-    border-radius: 0px 7px 0px 0px;
+    border-radius: 0px 7px 7px 0px;
 }
 /* ------------------------------------------------------------------------------ */
 
@@ -89,17 +90,40 @@ body{
     --width: 450px;
     display: none;
     margin: 20px 0px;
-    border: 1px solid black;
+    font-family: 'Jost', sans-serif;
     width: var(--width);
     height: var(--width);
     grid-template-columns: 1fr;
     grid-auto-rows: 100px;
     overflow-y:auto;
-    padding: 10px 20px;
+    padding: 10px;
     background: rgba(162, 164, 173, 0.518);
     gap: 5px;
     position: relative;
     justify-self: center;
+}
+.no-games{
+    opacity: 0;
+    padding: 4px;
+    color: rgb(208, 51, 51);
+    top: -26px;
+    position: absolute;
+    animation: noGames 2s linear;
+}
+@keyframes noGames {
+    0%{
+        opacity: 0;
+    }
+    10%{
+        opacity: 1;
+    }
+    90%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+
 }
 .history-row{
     display: grid;
@@ -122,7 +146,7 @@ body{
     grid-template-columns: repeat(3, var(--square-width));
     grid-template-rows: repeat(3, var(--square-width));
     margin-left: calc(50% - calc(var(--square-width) / 2));
-
+    font-family:'Barlow', sans-serif;
 }
 .history-row p{
 
@@ -135,9 +159,23 @@ body{
     cursor: pointer;
     user-select: none;
 }
+.win-square{
 
+    animation: squareAnimation infinite ease-in-out 1.5s;
+}
+@keyframes squareAnimation {
+    0%{
+    background:rgba(10, 18, 108, 0.168);
+    }
+    50%{
+    background:rgba(3, 29, 225, 0.268);
+    }
+    100%{
+    background:rgba(10, 18, 108, 0.168);
+    }
+}
 .mini-square{
-    padding-top: 25%;
+    padding-top: 20%;
     text-align: center;
     border: 0.5px solid rgba(98, 94, 94, 0.54);
 }
@@ -157,7 +195,6 @@ body{
 
 .square{
     border: 1px solid rgba(0, 0, 0, 0.3);
-    cursor: pointer;
     user-select: none;
     display: flex;
     justify-content: center;
@@ -167,9 +204,10 @@ body{
     color: rgba(0, 0, 0, 0.586);
     transition: all 0.3s;
 }
-.square:hover{
+.square-hover:hover{
     box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
     background:rgba(31, 30, 30, 0.137);
+    cursor: pointer;
 }
 .square:active{
     box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
@@ -203,8 +241,8 @@ body{
     user-select: none;
     cursor: pointer;
     background: rgba(0, 0, 0, 0.258);
-    box-shadow: rgba(0, 0, 0, 0.173) 4px 2px 4px 0px, rgba(0, 0, 0, 0.383) 1px 2px 6px 2px;
-
+    box-shadow: rgba(0, 0, 0, 0.173) 4px 2px 4px 0px, rgba(0, 0, 0, 0.183) 1px 2px 6px 2px;
+    border: 1px solid rgba(128, 128, 128, 0.158);
 
 
 }
@@ -215,7 +253,7 @@ body{
     border-radius: 5px;
     width: 50%;
     height: 100%;
-    background-color:rgb(16, 20, 61);
+    background-color:rgba(3, 9, 75, 0.6);
     transition: all 0.2s linear;
     transform: none;
     text-align: center;
@@ -237,7 +275,13 @@ body{
 .toggle-2-X{
     transform: none;
 }
-
+.vs-box{
+    font-family: 'Jost', sans-serif;
+    font-size: 1.4rem;
+    margin-top: 23px;
+    align-self: start;
+    user-select: none;
+}
 
 input{
     text-align: center;
@@ -245,8 +289,13 @@ input{
     font-size: 1rem;
     background-color: rgb(255, 255, 255);
     outline: none;
-    border: 1px solid blue;
+    border: 1px solid rgb(0, 0, 0,0.6);
     font-family: 'M PLUS 1p', sans-serif;
+    
+}
+input:focus{
+    border: 1px solid rgba(69, 147, 235, 0.691);
+    box-shadow: rgba(2, 11, 74, 0.53) 0px 0px 3px 2px;
 }
 /* ------------------------------------------------------------------------------ */
 .drop-down{
@@ -260,8 +309,11 @@ input{
     padding: 5px;
     cursor: pointer;
     font-family: 'Jost', sans-serif;
+    background: rgba(0, 4, 56, 0.168);
 }
-
+.drop-down:hover{
+    background:  rgba(3, 13, 163, 0.168);;
+}
 
 .arrows{
     width: 18px;
@@ -277,41 +329,51 @@ input{
 .menu{
     position: absolute;
     list-style: none;
-    background: white;
-    width: 105%;
-    height: 84px;
+    background: rgb(196, 195, 201);
+    top: -40px;
+    width: 101%;
+    height:112px;
     text-align: center;
     flex-direction: column;
     justify-content: space-between;
     z-index: 100;
+    border: 1px solid rgba(0, 0, 0, 0.55);
 }
 .menu li{
-    padding: 5px;
+    padding: 7px;
 }
 .menu li:hover{
-    background-color: aliceblue;
+    background-color: rgba(15, 176, 234, 0.35);
 }
 /* ------------------------------------------------------------------------------ */
 .winner-announce{
     display: none;
     position: absolute;
     border-radius: 8px;
-    padding: 0px 50px 50px 50px;
+    padding: 25px 50px 50px 50px;
     width: 250px;
     height: 100px;
-    background: rgb(143, 142, 142, 0.9);
+    background: rgba(66, 68, 70, 0.967);
     top: calc(50% - 125px);
     left: calc(50% - 125px);
     justify-items: center;
     z-index: 60;
     grid-template-rows: 1fr 1fr;
+    align-items: center;
+    color: white;
+    gap: 15px;
+    font-family: 'M PLUS 1p', sans-serif;
 }
 
-.winner-announce p{
 
-}
 .winner-announce button{
-    align-self: center;
+    border: none;
+    outline: none;
+    padding: 5px 15px;
+    background: rgba(159, 224, 249, 0.425);
+    font-family: 'Barlow', sans-serif;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
 
 }
 
@@ -324,16 +386,26 @@ input{
     z-index: 50;
 }
 /* ------------------------------------------------------------------------------ */
+
 .button-container > * {
     transition: all 0.3s;
     cursor: pointer;
 }
 #history-btn, #reset-btn{
+    position: relative;
     outline: none;
     border: none;
     padding: 3px;
     font-family: 'Jost', sans-serif;
     font-size: 1.1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+}
+.icon{
+    fill: red;
+    width: 20px;
 }
 .github{
     margin-top: calc(50% - 15px);
@@ -363,9 +435,7 @@ input{
 
 
 
-a{
-    cursor: default;
-}
+
 @media only screen and (max-width: 650px){
     .board-container{
         grid-template-columns: repeat(3, 100px);

@@ -1,5 +1,7 @@
 //in ai vs ai, sometimes it thinks random is minimax
 
+//tie games only replay once in game history human vs ai and ai vs ai
+
 
 //if reset board and ai vs ai, doesn't work unless click ai from menu again
 //solution could be - if ai vs ai and turn is 1. reset btn displays "Fight robots!" instead of reset board
@@ -24,6 +26,7 @@ const GameBoard = function(){
             const square = document.createElement("div");
             square.id=i;
             square.classList.add("square");
+            square.classList.add("square-hover");
             document.querySelector(".board-container").appendChild(square);
             square.addEventListener("click", turnClickRouter, {once:true});
             }
@@ -150,7 +153,8 @@ const GameBoard = function(){
             indexBoard[id]=player;
             if(indexBoard.filter(elem=>typeof elem!=="number").length<=9){
                 if(document.getElementById(id)!==null){
-                    document.getElementById(id).innerText=player; 
+                    document.getElementById(id).innerText=player;
+                    document.querySelectorAll(".square")[id].classList.remove("square-hover");
                 }
                  
             }
@@ -411,7 +415,7 @@ function declareResult(mark){
         modal.style.display="grid";
         modal.appendChild(text);
         modal.appendChild(playAgainBtn)
-        text.textContent = player? `${player} is the winner!`: `Tie!`;
+        text.textContent = player? `${player} wins!`: `Tie!`;
         playAgainBtn.textContent='Play Again?'
         function closeModal(e){
             if(e!=="noReset"){
@@ -431,12 +435,23 @@ const historyBtn = document.getElementById("history-btn");
 historyBtn.addEventListener("click", showHistory);
 let isHistory=false;
 function showHistory(){
-    if(!isHistory){
+    if(!allGames.length){
+        if(!document.querySelector(".no-games")){
+            const noGames = document.createElement("div");
+            noGames.innerText= "No finished games"
+            noGames.classList.add("no-games")
+            document.getElementById("history-btn").append(noGames);
+            isHistory=false;
+            return;
+        }
+    }
+
+    if(!isHistory && allGames.length){
         const historyGrid = document.querySelector(".history-mode");
         historyGrid.innerHTML="";
         historyGrid.style.display="grid";
         document.querySelector(".board-container").style.display="none";
-        historyBtn.textContent="Close History"
+        historyBtn.innerHTML=`Close History <img src="icons/history.svg" class="icon">`
         for(let i=0;i<allGames.length;i++){
             let cutArr = 0, winner, winPattern;
             if(allGames[i][allGames[i].length-1]!=="tie"){
@@ -454,7 +469,7 @@ function showHistory(){
     else{
         document.querySelector(".history-mode").style.display="none";
         document.querySelector(".board-container").style.display="grid";
-        historyBtn.textContent="Game History"
+        historyBtn.innerHTML=`Game History <img src="icons/history.svg" class="icon">`
         isHistory=false;
     }
 }
@@ -507,7 +522,7 @@ const historyFactory = (moves, winner, winPattern, index)=>{
         container.querySelectorAll(".mini-square").forEach((elem,i)=>{
             if(pattern!==undefined){
                 if(i===pattern[0]||i===pattern[1]||i===pattern[2]){
-                    elem.style.background="red"
+                    elem.classList.add("win-square");
                 }
             }
             for(let x=0;x<gameMoves.length;x++){
@@ -523,6 +538,7 @@ const historyFactory = (moves, winner, winPattern, index)=>{
         speedBtn.style.opacity="0.3"
         playBtn.style.opacity="0.3"
         container.querySelectorAll(".mini-square").forEach((elem, index)=>{
+            elem.classList.remove("win-square")
             elem.innerText="";
             elem.style.background="";
             let timer;
@@ -549,4 +565,4 @@ const historyFactory = (moves, winner, winPattern, index)=>{
     return {}
 }
 
-
+//------------------------------------------------------------------------------------------//
