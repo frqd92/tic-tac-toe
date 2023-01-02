@@ -1,17 +1,13 @@
-
 //in ai vs ai, sometimes it thinks random is minimax
-
-//make a div that takes half the space of the player info rectangle and it shifts at the turn
 
 
 //if reset board and ai vs ai, doesn't work unless click ai from menu again
 //solution could be - if ai vs ai and turn is 1. reset btn displays "Fight robots!" instead of reset board
 
-
+//AI advanced X, human O. finish game or reset game. bug: O (human) has to start, x should always start
 //try setting settimeout in minimax and not move router
 
 //modify scroll bar
-
 let moveHistory=[];
 let allGames=[];
 let indexBoard = [] 
@@ -19,7 +15,9 @@ let turn=1;
 const GameBoard = function(){
     function createBoard(){ // start/resets board
         document.querySelector(".board-container").innerHTML="";
+        document.querySelector(".turn-div").style.opacity="0";
         turn=1;
+        turnIndicator()
         moveHistory=[];
         for(let i=0;i<9;i++){
             indexBoard[i]=i;
@@ -30,18 +28,19 @@ const GameBoard = function(){
             square.addEventListener("click", turnClickRouter, {once:true});
             }
             if(checkPlayerType()[0].includes("AI") && checkPlayerType()[1].includes("AI")){
-                if(!document.querySelector("AI-btn")){
+                if(!document.querySelector("AI-btn")){ //not finished, need to remove and add event listener, once:true not working
                     const aiBtn = document.createElement("button")
                     aiBtn.innerText = "AI Fight!"
                     aiBtn.classList.add("AI-btn");
-                    document.querySelector(".info-container").append(aiBtn)
+                    if(!document.querySelector(".AI-btn")){
+                        document.querySelector(".info-container").append(aiBtn)
+                    }
+
                     aiBtn.addEventListener("click",()=>{
-                        aiBtn.style.display="none";
                         createBoard()
                         menuRouter()
                     }, {once:true} )
                 }
-
             }
         }
     function turnClickRouter(e){if(!e.target.textContent){moveRouter(e.target.id)}};
@@ -150,7 +149,10 @@ const GameBoard = function(){
         if(!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){ //gameplay
             indexBoard[id]=player;
             if(indexBoard.filter(elem=>typeof elem!=="number").length<=9){
-                document.getElementById(id).textContent=player;  
+                if(document.getElementById(id)!==null){
+                    document.getElementById(id).innerText=player; 
+                }
+                 
             }
             turn++;   
             moveHistory.push({mark: player, id: parseInt(id)})
@@ -161,12 +163,13 @@ const GameBoard = function(){
             moveHistory.push(detectWinnerName(winner.mark), winner.indexOfWin)
             allGames.push(moveHistory)
         }
-        else if(turn>9){ //tie
+        else if(!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O") && turn>9){ //tie
             moveHistory.push("tie")
             allGames.push(moveHistory)
             declareWinner(null);
             return;
         }
+        turnIndicator();
 
     }
     function declareWinner(winner){
@@ -221,7 +224,29 @@ const GameBoard = function(){
         }
         return [player1, player2]
     }
-    return {createBoard, menuRouter, checkPattern}
+    function turnIndicator(){
+        const turnDiv = document.querySelector(".turn-div");
+        const toggles = document.querySelectorAll(".toggle")
+        if(turn===1){
+            turnDiv.opacity="0"
+        }
+        else{
+            if(checkPlayerType()[0].includes("AI") ||checkPlayerType()[1].includes("AI")){
+                turnDiv.style.opacity="0";
+            }
+            else{
+                turnDiv.style.opacity="1";
+                if(toggles[0].innerText==="X"){
+                    turn%2===0?turnDiv.classList.add("turn-div-2"):turnDiv.classList.remove("turn-div-2");
+                }
+                else{
+                    turn%2!==0?turnDiv.classList.add("turn-div-2"):turnDiv.classList.remove("turn-div-2");
+                }
+         
+            }
+        }
+    }
+    return {createBoard, menuRouter, checkPattern, turnIndicator}
 }
 
 //factory function for AI players
@@ -291,13 +316,18 @@ game.createBoard()
 //------------------------------------------------------------------------------------------//
 //Reset Button
 const resetBtn = document.getElementById("reset-btn");
-resetBtn.addEventListener("click", ()=>game.createBoard());
+resetBtn.addEventListener("click", ()=>{
+    isHistory=true;
+    showHistory();
+    game.createBoard();
+});
 //------------------------------------------------------------------------------------------//
 //toggle player
 const toggleContainer = document.querySelectorAll(".toggle-container");
 toggleContainer.forEach(elem=>elem.addEventListener("click", toggleLogic));
 function toggleLogic(){
     game.createBoard();
+    game.turnIndicator()
     toggle1 = document.querySelector(".toggle-1")
     toggle2 = document.querySelector(".toggle-2");
     toggle1.classList.toggle("toggle-1-O");
@@ -309,6 +339,9 @@ function toggleLogic(){
     else{
         toggle1.textContent="X";
         toggle2.textContent="O"
+    }
+    if(turn===1){
+        toggle1.innerText==="O"?document.querySelector(".turn-div").classList.add("turn-div-2"):document.querySelector(".turn-div").classList.remove("turn-div-2")
     }
 }
 //------------------------------------------------------------------------------------------//
@@ -332,10 +365,17 @@ const selectMenu=function(className, index){
         text.textContent = e.target.textContent
         menu.style.visibility="hidden";
         select.addEventListener("click", showMenu);
+        const aiChange = GameBoard();
         if(e.target.textContent.includes("AI")){
-            const aiChange = GameBoard();
             aiChange.menuRouter(e.target.textContent);
         }
+        else{
+            if(document.querySelector(".AI-btn")){
+                document.querySelector(".AI-btn").remove()
+            }
+
+        }
+        aiChange.turnIndicator();
     }
     window.addEventListener("click", e=>{ //close menu when clicking outside of it
         if(!e.target.className.includes("drop-down")){
@@ -460,8 +500,6 @@ const historyFactory = (moves, winner, winPattern, index)=>{
                 speedBtn.innerText="1x"; speedState=0; speed = 500;
         }
     }
-
-    
     playBtn.addEventListener("click", replayRoute);
     function replayRoute(){replayGame(littleContainer, pattern, speed)}
     function boardMarks(container, pattern){
