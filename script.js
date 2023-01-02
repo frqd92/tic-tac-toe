@@ -1,15 +1,3 @@
-//in ai vs ai, sometimes it thinks random is minimax
-
-//tie games only replay once in game history human vs ai and ai vs ai
-
-
-//if reset board and ai vs ai, doesn't work unless click ai from menu again
-//solution could be - if ai vs ai and turn is 1. reset btn displays "Fight robots!" instead of reset board
-
-//AI advanced X, human O. finish game or reset game. bug: O (human) has to start, x should always start
-//try setting settimeout in minimax and not move router
-
-//modify scroll bar
 let moveHistory=[];
 let allGames=[];
 let indexBoard = [] 
@@ -41,7 +29,7 @@ const GameBoard = function(){
                     aiBtn.addEventListener("click",()=>{
                         createBoard()
                         menuRouter()
-                    },{once:true});
+                    });
                 }
             }
         }
@@ -94,49 +82,27 @@ const GameBoard = function(){
                 player2.type.includes("random")?typePlayer2 = ai3.random:typePlayer2 = ai3.idealSquare;
                 let timer;
                 for(let i=0;i<=4;i++){
-                    if(turn%2!==0){
-                        time(i, "X", typePlayer1)
-                        time(i, "O", typePlayer2)
-                    }
-                    else{
-                        time(i, "O", typePlayer1)
-                        time(i, "X", typePlayer2)
-                    }         
+                    if(turn%2!==0){time(i, "X", typePlayer1);time(i, "O", typePlayer2);}
+                    else{time(i, "O", typePlayer1); time(i, "X", typePlayer2);}         
                 }
                 function time(i, mark, aiType){
                     timer = setTimeout(()=>{
-                        if(checkPattern(indexBoard, mark) || turn>10){
-                            clear(timer);
-                            return;
-                        }
+                        if(checkPattern(indexBoard, mark) || turn>10){clear(timer);return;}
                         playTurn(aiType(), mark);
                     }, 500 * i);
-                    function clear(timer){
-                        clearTimeout(timer)
-                    }
+                    function clear(timer){clearTimeout(timer)}
                 }
-
             }
             else if(player1.type === "Human" || player2.type==="Human"){
                 if( (checkPlayerMark().indexOf("X")===0 && player1.type.includes("AI")) || 
                 (checkPlayerMark().indexOf("X")===1 && player2.type.includes("AI"))){
                     if(turn%2!==0){
-                        if(checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")){
-                            playTurn(ai.random(), "X");
-                        }
-                        else{
-                            playTurn(ai.idealSquare(),"X");
-                        }
+                        checkPlayerType()[0].includes("random") || checkPlayerType()[1].includes("random")?playTurn(ai.random(), "X"):playTurn(ai.idealSquare(),"X");
                     }
             }
             else{
                 if(turn>1 && turn%2===0){
-                    if(player1.type.includes("random") || player2.type.includes("random")){
-                        playTurn(ai.random(), "O");
-                    }
-                    else{
-                        playTurn(ai.idealSquare(), "O");
-                    }
+                    player1.type.includes("random") || player2.type.includes("random")?playTurn(ai.random(), "O"):playTurn(ai.idealSquare(), "O");
                 }
             }
             }
@@ -145,7 +111,6 @@ const GameBoard = function(){
     function playTurn(id, player){
         if(!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")){ //gameplay
             indexBoard[id]=player;
-            console.log(indexBoard.filter(elem=>typeof elem!=="number"))
             if(indexBoard.filter(elem=>typeof elem!=="number").length<=9){
                 if(document.getElementById(id)!==null){
                     document.getElementById(id).innerText=player;
@@ -154,8 +119,6 @@ const GameBoard = function(){
                     moveHistory.push({mark: player, id: parseInt(id)})
                 }
             }
-
-            //console.log(moveHistory)
         }
         if(checkPattern(indexBoard, player)){   //win
             let winner = checkPattern(indexBoard, player);
@@ -164,24 +127,16 @@ const GameBoard = function(){
             allGames.push(moveHistory)
         }
         else if((!checkPattern(indexBoard, "X") && !checkPattern(indexBoard, "O")) && turn>9){ //tie
-            console.log("tie")
-            console.log(allGames)
             if(!moveHistory.includes("tie")){
                 moveHistory.push("tie")
                 allGames.push(moveHistory)
             }
-
-            console.log(allGames)
             declareWinner(null);
-
         }
         turnIndicator();
-
     }
     function declareWinner(winner){
-        if(winner===null){
-            declareResult();
-        }
+        if(winner===null)declareResult();
         else{
             const squares = document.querySelectorAll(".square");
             let winArray = winner.indexOfWin;
@@ -262,7 +217,7 @@ const AI = function(board, aiMark){
         return miniMax(board, aiMark).index;
     }
     function miniMax(board, player){
-        const checker = GameBoard(); //how to assign this without running it?
+        const checker = GameBoard();
         let emptySquares = freeSpots();
         let opponent = player==="X"?"O":"X";
 
@@ -315,6 +270,7 @@ const AI = function(board, aiMark){
 
     return{random, idealSquare}
 }
+
 
 //game Creation
 const game = GameBoard();
@@ -373,15 +329,10 @@ const selectMenu=function(className, index){
         menu.style.visibility="hidden";
         select.addEventListener("click", showMenu);
         const aiChange = GameBoard();
-        if(e.target.textContent.includes("AI")){
             aiChange.menuRouter(e.target.textContent);
-        }
-        else{
             if(document.querySelector(".AI-btn")){
                 document.querySelector(".AI-btn").remove()
             }
-
-        }
         aiChange.turnIndicator();
     }
     window.addEventListener("click", e=>{ //close menu when clicking outside of it

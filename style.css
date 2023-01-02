@@ -72,8 +72,22 @@ body{
 }
 .AI-btn{
     position: absolute;
+    cursor: pointer;;
     bottom: 10%;
     padding: 2px 10px;
+    background: rgb(0, 0, 0);
+    color: red;
+    text-shadow: 0 0 32px rgb(189, 18, 18);
+    border-radius: 1px;
+    border: none;
+    outline: none;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bolder;
+    font-size: 1rem;
+    transition: all 0.5s;
+}
+.AI-btn:active{
+    font-size: 0.9rem;
 }
 .github{
     justify-self: center;
@@ -97,7 +111,6 @@ body{
     grid-auto-rows: 100px;
     overflow-y:auto;
     background: rgba(94, 97, 97, 0.272);
-    gap: 5px;
     position: relative;
     justify-self: center;
 }
@@ -133,7 +146,6 @@ body{
     justify-items: center;
     align-items: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.327);
-    border-top: 1px solid rgba(0, 0, 0, 0.327);
     user-select: none;
 }
 .history-row:first-child{
@@ -141,6 +153,12 @@ body{
 }
 .history-row:last-child{
     border-bottom: none;
+}
+.history-row:nth-child(odd){
+    background: rgba(2, 8, 61, 0.155);
+}
+.history-row:nth-child(even){
+    background: rgba(64, 66, 82, 0.159);
 }
 .history-row div{
     --square-width: calc(100px / 3);
