@@ -8,8 +8,9 @@
 //solution could be - if ai vs ai and turn is 1. reset btn displays "Fight robots!" instead of reset board
 
 
-
 //try setting settimeout in minimax and not move router
+
+//modify scroll bar
 
 let moveHistory=[];
 let allGames=[];
@@ -27,6 +28,20 @@ const GameBoard = function(){
             square.classList.add("square");
             document.querySelector(".board-container").appendChild(square);
             square.addEventListener("click", turnClickRouter, {once:true});
+            }
+            if(checkPlayerType()[0].includes("AI") && checkPlayerType()[1].includes("AI")){
+                if(!document.querySelector("AI-btn")){
+                    const aiBtn = document.createElement("button")
+                    aiBtn.innerText = "AI Fight!"
+                    aiBtn.classList.add("AI-btn");
+                    document.querySelector(".info-container").append(aiBtn)
+                    aiBtn.addEventListener("click",()=>{
+                        aiBtn.style.display="none";
+                        createBoard()
+                        menuRouter()
+                    }, {once:true} )
+                }
+
             }
         }
     function turnClickRouter(e){if(!e.target.textContent){moveRouter(e.target.id)}};
@@ -153,12 +168,6 @@ const GameBoard = function(){
             return;
         }
 
-        //delete
-        const testing = document.querySelector(".testdiv")
-        testing.style.display = "block"
-        testing.innerHTML = `
-        arr: ${indexBoard} <br> turn: ${turn} <br> `
-        //delete
     }
     function declareWinner(winner){
         if(!winner){
@@ -339,7 +348,7 @@ const selectLeft = selectMenu("drop-1", 1);
 const selectRight = selectMenu("drop-2", 2);
 
 window.addEventListener("click",(e)=>{
-    if(e.target.textContent==="Game History"){
+    if(e.target.textContent==="Github"){
         console.log(allGames)
     }
 })
@@ -387,7 +396,6 @@ function showHistory(){
         historyGrid.style.display="grid";
         document.querySelector(".board-container").style.display="none";
         historyBtn.textContent="Close History"
-    
         for(let i=0;i<allGames.length;i++){
             let cutArr = 0, winner, winPattern;
             if(allGames[i][allGames[i].length-1]!=="tie"){
@@ -399,7 +407,6 @@ function showHistory(){
             const moves = [...allGames[i]];
             moves.splice(moves.length-cutArr, cutArr)
             let row = historyFactory(moves, winner, winPattern, i);
-
         }
         isHistory=true;
     }
@@ -419,7 +426,9 @@ const historyFactory = (moves, winner, winPattern, index)=>{
     const row = document.createElement("div");
     const text = document.createElement("p");
     const playBtn = document.createElement("img");
-
+    const speedBtn = document.createElement("span");
+    speedBtn.classList.add("speed-btn");
+    speedBtn.innerText = "1x"
     text.innerText = gameWinner===undefined?"Tie Game":`${winner} wins!`;
     playBtn.setAttribute("src", "icons/play.svg");
     playBtn.classList.add(`btn-${index}`)
@@ -433,11 +442,28 @@ const historyFactory = (moves, winner, winPattern, index)=>{
     row.appendChild(littleContainer);
     row.appendChild(text);
     row.appendChild(playBtn)    
+    row.appendChild(speedBtn);
     container.prepend(row)
-    boardMarks(littleContainer, pattern)
-    playBtn.addEventListener("click", ()=>{
-        replayGame(littleContainer, pattern)
-    });
+    boardMarks(littleContainer, pattern);
+    let speedState=0;
+    let speed = 500;
+    speedBtn.addEventListener("click", speedFunc);
+    function speedFunc(){
+        switch(speedState){
+            case 0:
+                speedBtn.innerText="2x"; speedState=1; speed=250;
+                break;
+            case 1:
+                speedBtn.innerText="4x"; speedState=2; speed=125;
+                break;
+            case 2:
+                speedBtn.innerText="1x"; speedState=0; speed = 500;
+        }
+    }
+
+    
+    playBtn.addEventListener("click", replayRoute);
+    function replayRoute(){replayGame(littleContainer, pattern, speed)}
     function boardMarks(container, pattern){
         container.querySelectorAll(".mini-square").forEach((elem,i)=>{
             if(pattern!==undefined){
@@ -452,7 +478,11 @@ const historyFactory = (moves, winner, winPattern, index)=>{
             }
         })
     }
-    function replayGame(container, pattern){
+    function replayGame(container, pattern, speed){
+        playBtn.removeEventListener("click", replayRoute);
+        speedBtn.removeEventListener("click", speedFunc);
+        speedBtn.style.opacity="0.3"
+        playBtn.style.opacity="0.3"
         container.querySelectorAll(".mini-square").forEach((elem, index)=>{
             elem.innerText="";
             elem.style.background="";
@@ -468,88 +498,16 @@ const historyFactory = (moves, winner, winPattern, index)=>{
                     if(arrInd===gameMoves.length-1){
                         boardMarks(container, pattern);
                         clearTimeout(timer);
+                        playBtn.addEventListener("click", replayRoute);
+                        speedBtn.addEventListener("click", speedFunc);
+                        playBtn.style.opacity="1"
+                        speedBtn.style.opacity="1";
                     }
-                },300*arrInd)
+                },speed*arrInd)
             }
         })
     }
     return {}
 }
 
-
-
-
-
-// const historyFactory = (winner, winPattern, moves)=>{
-//     let arr = allGames;
-//     const winner = arr[arr.length-1]==="tie"?null:arr[arr.length-2];
-//     const pattern = winner!==null?arr[arr.length-1]:null;
-//     winner!==null?arr.splice([arr.length-2], 2):arr.splice([arr.length-1], 1);
-//     function makeRow(arr){
-//         const container = document.querySelector(".history-mode");
-//         const row = document.createElement("div");
-//         const text = document.createElement("p");
-//         const playBtn = document.createElement("img");
-//         playBtn.classList.add("play-btn")
-//         playBtn.setAttribute("src", "icons/play.svg");
-//         text.innerText = winner===null?"Tie Game":`${winner} wins!`;
-//         row.classList.add("history-row");
-//         const littleContainer = document.createElement("div")
-//         littleContainer.classList.add("little-container");
-//         for(let i=0;i<9;i++){
-//             const miniSquare = document.createElement("div");
-//             miniSquare.classList.add("mini-square");
-//             littleContainer.appendChild(miniSquare);
-//         }
-//         row.appendChild(littleContainer);
-//         row.appendChild(text);
-//         row.appendChild(playBtn)    
-//         container.prepend(row)
-//         miniBoardMarks(pattern);
- 
-//         playBtn.addEventListener("click", replayGame)
-//         function replayGame(){
-//             document.querySelectorAll(".mini-square").forEach((elem, index)=>{
-//                 elem.innerText="";
-//                 elem.style.background="";
-//                 let timer;
-
-//                 arr.forEach((arrElem, arrInd)=>{
-//                     if(arr[arrInd].id ===index){
-//                         timeSquare(arrInd);
-//                     }
-//                 })
-//                 function timeSquare(arrInd){
-//                     timer = setTimeout(()=>{
-//                         elem.innerText=arr[arrInd].mark;
-//                         if(arrInd===arr.length-1){
-//                             miniBoardMarks(pattern, arr);
-//                             clearTimeout(timer);
-//                         }
-//                     },300*arrInd)
-//                 }
-//             })
-//         }
-
-//     }
-
-//     function miniBoardMarks(pattern){
-//         console.log(arr)
-//         document.querySelectorAll(".mini-square").forEach((elem,i)=>{
-//             if(pattern!==null){
-//                 if(i===pattern[0]||i===pattern[1]||i===pattern[2]){
-//                     elem.style.background="red"
-//                 }
-//             }
-//             for(let x=0;x<arr.length;x++){
-//                 if(i===arr[x].id){
-//                     elem.textContent=arr[x].mark;
-//                 }
-//             }
-//         })
-//     }
-
-
-//     return {makeRow}
-// }
 
