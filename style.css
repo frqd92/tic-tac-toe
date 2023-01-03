@@ -472,6 +472,9 @@ input:focus{
         grid-template-rows: repeat(3, 100px);
     }
     .history-mode{
+        margin-top: -10px;
+    }
+    .history-mode{
         width: 300px;
         height: 300px;
     }
@@ -484,7 +487,7 @@ input:focus{
     .main-container{
         grid-template-rows: 2fr 0.7fr 0.5fr;
     }
-    .main-container .board-container{
+    .main-container .board-container,  .main-container .board-container{
         grid-row: 1 / 2;
 
     }
