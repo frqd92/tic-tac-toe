@@ -28,6 +28,7 @@ body{
     position: relative;
     background: rgba(85, 84, 84, 0.211);
     box-shadow: rgba(0, 0, 0, 0.25) 50px 50px 78px, rgba(0, 0, 0, 0.22) 20px 8px 30px, rgba(0, 0, 0, 0.12) 10px 14px 16px, rgba(0, 0, 0, 0.17) 0px 0px 13px, rgba(0, 0, 0, 0.3) 0px 0px 15px;
+    transition: all 0.6s;
 }
 
 .info-container{
@@ -39,6 +40,25 @@ body{
     border-radius: 10px;
     padding: 15px;
     gap: 20px;
+}
+.board-container{
+    display: grid;
+    grid-template-columns: repeat(3, 150px);
+    grid-template-rows: repeat(3, 150px);
+    margin: 20px 0px;
+    justify-self: center;
+    transition: all 0.5s;
+}
+.button-container{
+    justify-self: end;
+    width: 100%;
+    padding: 0px 5px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 0.2fr;
+    gap:10px;
+    justify-content: center;
+    border-top: 3px double rgba(0, 0, 0, 0.277);
+    align-items: center;
 }
 .turn-div{
     opacity: 0;;
@@ -59,17 +79,7 @@ body{
 }
 /* ------------------------------------------------------------------------------*/
 
-.button-container{
-    justify-self: end;
-    width: 100%;
-    padding: 0px 5px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 0.2fr;
-    gap:10px;
-    justify-content: center;
-    border-top: 3px double rgba(0, 0, 0, 0.277);
-    align-items: center;
-}
+
 .AI-btn{
     position: absolute;
     cursor: pointer;;
@@ -92,13 +102,7 @@ body{
 .github{
     justify-self: center;
 }
-.board-container{
-    display: grid;
-    grid-template-columns: repeat(3, 150px);
-    grid-template-rows: repeat(3, 150px);
-    margin: 20px 0px;
-    justify-self: center;
-}
+
 /* ------------------------------------------------------------------------------ */
 .history-mode{
     --width: 450px;
@@ -451,12 +455,68 @@ input:focus{
     transform: scale(1);
 }
 @media only screen and (max-width: 650px){
+    .main-container{
+        grid-template-rows: 2fr 4fr 1fr;
+    }
+    .info-container{
+        padding: 0px 15px;
+        height: 80%;
+    }
+    .vs-box{
+       align-self: center;
+       margin-top: -30px;
+    }
     .board-container{
+        margin-top: -10px;
         grid-template-columns: repeat(3, 100px);
         grid-template-rows: repeat(3, 100px);
-      }
-      .history-mode{
+    }
+    .history-mode{
         width: 300px;
         height: 300px;
-      }
+    }
+    input{
+        width: 130px;
+    }
+}
+
+@media only screen and (max-width: 400px){
+    .main-container{
+        grid-template-rows: 2fr 0.7fr 0.5fr;
+    }
+    .main-container .board-container{
+        grid-row: 1 / 2;
+
+    }
+    .main-container .info-container{
+        grid-row: 2 / 3;
+        transition: all 0.3s;
+        height: 90%;
+        padding: 15px 0px;
+    }
+    .main-container .button-container{
+        grid-row: 3 / 4;
+        border: none;
+        padding: 0px;
+        transition: all 0.3s;
+
+    }
+    input{
+        width: 80%;
+        font-size: 0.8rem;
+    }
+    .drop-down{
+        width: 80%;
+        font-size: 0.8rem;
+    }
+    .menu{
+        width: 105%;
+        height: 100px;
+    }
+    #history-btn, #reset-btn{
+        width: 95%;
+        white-space:nowrap;
+        font-size: 1rem;
+    }
+
 }

@@ -19,7 +19,7 @@ const GameBoard = function(){
             square.addEventListener("click", turnClickRouter, {once:true});
             }
             if(checkPlayerType()[0].includes("AI") && checkPlayerType()[1].includes("AI")){
-                if(!document.querySelector("AI-btn")){ //not finished, need to remove and add event listener, once:true not working
+                if(!document.querySelector("AI-btn")){ 
                     const aiBtn = document.createElement("button")
                     aiBtn.innerText = "AI Fight!"
                     aiBtn.classList.add("AI-btn");
@@ -142,6 +142,7 @@ const GameBoard = function(){
             let winArray = winner.indexOfWin;
             winArray.forEach((e,i)=>{squares[winArray[i]].style.background = 'rgba(60, 69, 127, 0.344)';})
             declareResult(winner.mark)
+            squares.forEach((square)=>{square.removeEventListener("click", turnClickRouter, {once:true});})
         }
     }
     function detectWinnerName(mark){
@@ -263,14 +264,10 @@ const AI = function(board, aiMark){
         }
         return moveHistory[idealMove]
     }
-
     function random(){console.log("random"+ aiMark ); return freeSpots()[Math.floor(Math.random() * freeSpots().length)]}
-
     function freeSpots(){return board.filter(elem=> typeof elem ==="number");}
-
     return{random, idealSquare}
 }
-
 
 //game Creation
 const game = GameBoard();
@@ -516,7 +513,7 @@ const historyFactory = (moves, winner, winPattern, index)=>{
             }
         })
     }
-    return {}
+    return {} //fuck.... not actually a factory lol
 }
 
 //------------------------------------------------------------------------------------------//
